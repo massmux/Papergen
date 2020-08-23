@@ -24,7 +24,6 @@
 
 import bit,sys
 import bech32, binascii, hashlib
-from bit import utils
 import subprocess
 
 def hash160(keyobj):
@@ -49,7 +48,7 @@ def getRandNoise():
     return hash0
 
 
-(rnd_len, sha_rounds,slt_len)=(3,2048,2)
+(rnd_len, sha_rounds,slt_len)=(5,2048,2)
 net="mainnet"
 
 print("Getting randomness from mic.. please wait")
@@ -60,7 +59,7 @@ key=bit.Key.from_hex(priv) if net=='mainnet' else bit.PrivateKeyTestnet.from_hex
 
 """ private and public key values in hex format """
 hex_k=key.to_hex()
-hex_K=utils.bytes_to_hex(key.public_key,True)
+hex_K=bit.utils.bytes_to_hex(key.public_key,True)
 
 """ calculate hash160 and bech32 address """
 hex_hash160=hash160(key).hex()
