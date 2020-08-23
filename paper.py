@@ -49,7 +49,7 @@ def getRandNoise():
 
 
 (rnd_len, sha_rounds,slt_len)=(5,2048,2)
-net="mainnet"
+net="testnet"
 
 print("Getting randomness from mic.. please wait")
 priv=getRandNoise()
@@ -72,9 +72,16 @@ print("private key: %s" % (str(hex_k)))
 print("public key: %s" % (str(hex_K)))
 print("hash160: %s " % str(hex_hash160) )
 print("WIF: %s" % str (key.to_wif() ) )
-print("P2PKH address: %s" % str (key.address ) )
-print("P2SH address: %s" % str (key.segwit_address ) )
-print("bech32 address: %s " % str ( bech32))
+print("p2pkh address: %s" % str (key.address ) )
+print("p2wpkh-p2sh address: %s" % str (key.segwit_address ) )
+print("p2wpkh (bech32) address: %s " % str ( bech32))
 
+try:
+    c=subprocess.getoutput('qr %s > %s' %  (key.to_wif(), 'wif.png')  )
+    c=subprocess.getoutput('qr %s > %s' %  (str(key.segwit_address), 'p2wpkh-p2sh.png')  )
+    c=subprocess.getoutput('qr %s > %s' %  (str(bech32), 'p2wpkh.png')  )
+    print("Qrcode images created")
+except:
+    print("error in creating qrcode")
 
 

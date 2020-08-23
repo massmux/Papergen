@@ -9,6 +9,7 @@ Bitcoin paperwallet generator by mic entropy
 ```
  pip3 install bit
  pip3 install bech32
+ pip3 install qrcode[pil]
 ```
 
 
