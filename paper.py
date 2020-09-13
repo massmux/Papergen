@@ -24,7 +24,17 @@
 
 import bit,sys
 import bech32, binascii, hashlib
-import subprocess
+import subprocess, argparse
+
+""" parsing arguments """
+def parseArguments():
+    global args
+    parser = argparse.ArgumentParser("papergen.py")
+    parser.add_argument("-n","--network", help="Specify network. Choose \
+                    mainnet or testnet, default mainnet", type=str, required=True, choices=['mainnet','testnet'],default='mainnet')
+    args = parser.parse_args()
+
+
 
 def hash160(keyobj):
     ripemd160=hashlib.new("ripemd160")
@@ -48,8 +58,10 @@ def getRandNoise():
     return hash0
 
 
+parseArguments()
+net=args.network
+
 (rnd_len, sha_rounds,slt_len)=(5,2048,2)
-net="testnet"
 
 print("Getting randomness from mic.. please wait")
 priv=getRandNoise()
