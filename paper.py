@@ -24,7 +24,8 @@
 
 import bit,sys
 import bech32, binascii, hashlib
-import subprocess, argparse
+import subprocess, argparse, sounddevice
+from sty import fg, bg, ef, rs
 
 """ parsing arguments """
 def parseArguments():
@@ -35,6 +36,10 @@ def parseArguments():
     args = parser.parse_args()
 
 
+def title(color, name):
+    print()
+    bgc = bg(color) if isinstance(color,str) else bg(*color)
+    print(bgc + ef.bold + "{:^20}".format(name) + rs.bg + rs.bold_dim)
 
 def hash160(keyobj):
     ripemd160=hashlib.new("ripemd160")
@@ -57,6 +62,9 @@ def getRandNoise():
         hash0=getsha256(hash0+salt0)
     return hash0
 
+def getNoise(sec):
+    sound = sounddevice.rec(int(SAMPLE_RATE * sec), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+    return hashlib.sha256(bytearray(b''.join(sound))).hexdigest()
 
 parseArguments()
 net=args.network
@@ -78,22 +86,21 @@ hex_hash160=hash160(key).hex()
 bech32=bech32enc(hash160(key), net) 
 
 """ printing results """
-print("**Results**")
-print("network: %s" % net)
-print("private key: %s" % (str(hex_k)))
-print("public key: %s" % (str(hex_K)))
-print("hash160: %s " % str(hex_hash160) )
-print("WIF: %s" % str (key.to_wif() ) )
-print("p2pkh address: %s" % str (key.address ) )
-print("p2wpkh-p2sh address: %s" % str (key.segwit_address ) )
-print("p2wpkh (bech32) address: %s " % str ( bech32))
+title((255, 150, 50), "\tBitcoin Paper wallet generated")
+print("\tNetwork:                   ", net)
+print("\tPrivate key:               ", (str(hex_k)))
+print("\tPublic key:                ", (str(hex_K)))
+print("\tHash160:                   ", str(hex_hash160) )
+print("\tWIF:                       ", str (key.to_wif() ) )
+print("\tp2pkh address:             ", str (key.address ) )
+print("\tp2wpkh-p2sh address:       ", str (key.segwit_address ) )
+print("\tp2wpkh(bech32) address:    ", str ( bech32))
 
 try:
     c=subprocess.getoutput('qr %s > %s' %  (key.to_wif(), 'wif.png')  )
     c=subprocess.getoutput('qr %s > %s' %  (str(key.segwit_address), 'p2wpkh-p2sh.png')  )
     c=subprocess.getoutput('qr %s > %s' %  (str(bech32), 'p2wpkh.png')  )
-    print("Qrcode images created")
+    print("\tQRcode images:             ","Created")
 except:
-    print("error in creating qrcode")
-
+    print("\tQRcode images:             ","Error")
 

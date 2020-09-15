@@ -4,3 +4,5 @@ mnemonic==0.19
 bit==0.7.1
 bech32==1.2.0
 qrcode==6.1
+sty==1.0.0b12
+sounddevice==0.4.0
