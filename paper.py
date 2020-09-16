@@ -25,7 +25,14 @@
 import bit,sys
 import bech32, binascii, hashlib
 import subprocess, argparse, sounddevice
-from sty import fg, bg, ef, rs
+
+""" system constants """
+
+NOISE_SAMPLE        = 5     # main sampling seconds
+SHA256_ROUNDS       = 2048  # sha256 rounds (number)
+NOISE_SAMPLE_SALT   = 3     # salt sampling seconds
+SAMPLE_RATE         = 44100 # samplerate
+SAMPLING_FMT        = 'wav'
 
 """ parsing arguments """
 def parseArguments():
@@ -35,11 +42,6 @@ def parseArguments():
                     mainnet or testnet, default mainnet", type=str, required=True, choices=['mainnet','testnet'],default='mainnet')
     args = parser.parse_args()
 
-
-def title(color, name):
-    print()
-    bgc = bg(color) if isinstance(color,str) else bg(*color)
-    print(bgc + ef.bold + "{:^20}".format(name) + rs.bg + rs.bold_dim)
 
 def hash160(keyobj):
     ripemd160=hashlib.new("ripemd160")
@@ -53,26 +55,43 @@ def bech32enc(ohash160,network='mainnet'):
 def getsha256(z):
     return hashlib.sha256(z.encode('utf-8')).hexdigest()
 
+
 def getRandNoise():
-    mycmd=subprocess.getoutput('arecord -d %s -f dat -t wav -q | sha256sum -b' %  str(rnd_len) )
+    """
+    creating unique noise by sampling entropy and salting it for SHA256_ROUNDS / use arecord+sha256 OS commands
+    this function is better when no equivalent library is available.
+    Returns sha256 salt hashed noise
+    """
+    mycmd=subprocess.getoutput('arecord -d %s -f dat -t %s -q | sha256sum -b' %  (str(NOISE_SAMPLE),SAMPLING_FMT ))
     hash0=mycmd[:64]
-    mysalt=subprocess.getoutput('arecord -d %s -f dat -t wav -q | sha256sum -b' %  str(slt_len) )
+    mysalt=subprocess.getoutput('arecord -d %s -f dat -t %s -q | sha256sum -b' %  (str(NOISE_SAMPLE_SALT),SAMPLING_FMT ))
     salt0=mysalt[:64]
-    for i in range(0,sha_rounds):
+    for i in range(0,SHA256_ROUNDS):
         hash0=getsha256(hash0+salt0)
     return hash0
 
-def getNoise(sec):
-    sound = sounddevice.rec(int(SAMPLE_RATE * sec), samplerate=SAMPLE_RATE, channels=2, blocking=True)
-    return hashlib.sha256(bytearray(b''.join(sound))).hexdigest()
+
+def getNoise256():
+    """
+    creating unique noise by sampling entropy and salting it for SHA256_ROUNDS / use python lib
+    Returns sha256 salt hashed noise
+    """
+    noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+    salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+    (noise,salt) =( hashlib.sha256(bytearray(b''.join(noise0))).hexdigest() , hashlib.sha256(bytearray(b''.join(salt0))).hexdigest() )
+    for i in range(0,SHA256_ROUNDS):
+        noise=getsha256(noise+salt)
+        ##print ("noise %s salt %s" % (noise,salt))
+    return noise
+
 
 parseArguments()
 net=args.network
 
-(rnd_len, sha_rounds,slt_len)=(5,2048,2)
-
 print("Getting randomness from mic.. please wait")
+# choose which sampling method.
 priv=getRandNoise()
+##priv=getNoise256()
 
 """ define the key object """
 key=bit.Key.from_hex(priv) if net=='mainnet' else bit.PrivateKeyTestnet.from_hex(priv)
@@ -86,7 +105,7 @@ hex_hash160=hash160(key).hex()
 bech32=bech32enc(hash160(key), net) 
 
 """ printing results """
-title((255, 150, 50), "\tBitcoin Paper wallet generated")
+print("\n\tBitcoin Paper wallet generated")
 print("\tNetwork:                   ", net)
 print("\tPrivate key:               ", (str(hex_k)))
 print("\tPublic key:                ", (str(hex_K)))
@@ -96,11 +115,14 @@ print("\tp2pkh address:             ", str (key.address ) )
 print("\tp2wpkh-p2sh address:       ", str (key.segwit_address ) )
 print("\tp2wpkh(bech32) address:    ", str ( bech32))
 
+""" creating png qrcodes images """
 try:
     c=subprocess.getoutput('qr %s > %s' %  (key.to_wif(), 'wif.png')  )
     c=subprocess.getoutput('qr %s > %s' %  (str(key.segwit_address), 'p2wpkh-p2sh.png')  )
+    c=subprocess.getoutput('qr %s > %s' %  (str(key.address), 'p2pkh.png')  )
     c=subprocess.getoutput('qr %s > %s' %  (str(bech32), 'p2wpkh.png')  )
     print("\tQRcode images:             ","Created")
 except:
     print("\tQRcode images:             ","Error")
+
 
