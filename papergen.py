@@ -24,7 +24,14 @@
 
 import bit,sys
 import bech32, binascii, hashlib
-import subprocess, argparse, sounddevice
+import subprocess, argparse,qrcode
+
+""" check if sounddevice lib is available, if it is then gets imported """
+try:
+    import sounddevice
+    mode='sd'
+except ImportError:
+    mode='arec'
 
 """ system constants """
 
@@ -88,10 +95,9 @@ def getNoise256():
 parseArguments()
 net=args.network
 
+""" use sounddevice if available, otherwise use arec command """
 print("Getting randomness from mic.. please wait")
-# choose which sampling method.
-priv=getRandNoise()
-##priv=getNoise256()
+priv=getRandNoise() if mode=='arec' else getNoise256()
 
 """ define the key object """
 key=bit.Key.from_hex(priv) if net=='mainnet' else bit.PrivateKeyTestnet.from_hex(priv)
@@ -117,12 +123,17 @@ print("\tp2wpkh(bech32) address:    ", str ( bech32))
 
 """ creating png qrcodes images """
 try:
-    c=subprocess.getoutput('qr %s > %s' %  (key.to_wif(), 'wif.png')  )
-    c=subprocess.getoutput('qr %s > %s' %  (str(key.segwit_address), 'p2wpkh-p2sh.png')  )
-    c=subprocess.getoutput('qr %s > %s' %  (str(key.address), 'p2pkh.png')  )
-    c=subprocess.getoutput('qr %s > %s' %  (str(bech32), 'p2wpkh.png')  )
+    qr_wif= qrcode.make(key.to_wif())
+    qr_wif.save("wif.png")
+    qr_segwit_addr= qrcode.make(str(key.segwit_address))
+    qr_wif.save("p2wpkh-p2sh.png")
+    qr_addr= qrcode.make( str(key.address) )
+    qr_wif.save("p2pkh.png")
+    qr_bech32= qrcode.make( str(bech32) )
+    qr_wif.save("p2wpkh.png")
     print("\tQRcode images:             ","Created")
 except:
     print("\tQRcode images:             ","Error")
+
 
 
