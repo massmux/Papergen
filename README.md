@@ -11,6 +11,7 @@ Bitcoin paperwallet generator by mic entropy
 ## Requirements
 
 ```
+ sudo apt-get install libportaudio2
  pip3 install -r requirements.txt
 
 ```
