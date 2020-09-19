@@ -1,7 +1,7 @@
 # requirements file
 # pip3 install -r requirements.txt
-mnemonic==0.19
-bit==0.7.1
-bech32==1.2.0
-qrcode==6.1
-sounddevice==0.4.0
+mnemonic
+bit
+bech32
+qrcode
+sounddevice

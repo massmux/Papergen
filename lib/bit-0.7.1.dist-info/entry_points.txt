@@ -1,0 +1,3 @@
+[console_scripts]
+bit = bit.cli:bit
+
