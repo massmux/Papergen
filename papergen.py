@@ -35,9 +35,9 @@ except ImportError:
 
 """ system constants """
 
-NOISE_SAMPLE        = 5     # main sampling seconds
+NOISE_SAMPLE        = 30     # main sampling seconds
 SHA256_ROUNDS       = 2048  # sha256 rounds (number)
-NOISE_SAMPLE_SALT   = 3     # salt sampling seconds
+NOISE_SAMPLE_SALT   = 5     # salt sampling seconds
 SAMPLE_RATE         = 44100 # samplerate
 SAMPLING_FMT        = 'wav'
 
@@ -94,8 +94,8 @@ def getNoise256():
         ##print ("noise %s salt %s" % (noise,salt))
     return noise
 
-# define our clear function
 def clear():
+    """ clear screen """
     # for windows
     if os.name == 'nt':
         _ = os.system('cls')
@@ -144,14 +144,11 @@ print()
 
 """ creating png qrcodes images """
 try:
-    qr_wif= qrcode.make(key.to_wif())
-    qr_wif.save("wif.png")
-    qr_segwit_addr= qrcode.make(str(key.segwit_address))
-    qr_wif.save("p2wpkh-p2sh.png")
-    qr_addr= qrcode.make( str(key.address) )
-    qr_wif.save("p2pkh.png")
-    qr_bech32= qrcode.make( str(bech32) )
-    qr_wif.save("p2wpkh.png")
+    qr_wif,qr_addr,qr_segwit,qr_bech32 = qrcode.make(wallet['WIF']), qrcode.make(wallet['p2pkh'] ), qrcode.make(wallet['p2wpkh-ps2h']), qrcode.make(wallet['p2wpkh'])
+    qr_wif.save("WIF.png")
+    qr_addr.save("p2pkh.png")
+    qr_segwit.save("p2wpkh-p2sh.png")
+    qr_bech32.save("p2wpkh.png")
     print ("QRCODES: {:12}".format("Created"))
 except:
     print ("QRCODES: {:12}".format("Error"))
