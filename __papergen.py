@@ -22,9 +22,9 @@
 #   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
 
-import bit,sys,os
+import bit,sys
 import bech32, binascii, hashlib
-import subprocess, argparse,qrcode
+import subprocess, argparse,qrcode,json
 
 """ check if sounddevice lib is available, if it is then gets imported """
 try:
@@ -40,9 +40,6 @@ SHA256_ROUNDS       = 2048  # sha256 rounds (number)
 NOISE_SAMPLE_SALT   = 3     # salt sampling seconds
 SAMPLE_RATE         = 44100 # samplerate
 SAMPLING_FMT        = 'wav'
-
-""" global """
-wallet={}
 
 """ parsing arguments """
 def parseArguments():
@@ -94,15 +91,6 @@ def getNoise256():
         ##print ("noise %s salt %s" % (noise,salt))
     return noise
 
-# define our clear function
-def clear():
-    # for windows
-    if os.name == 'nt':
-        _ = os.system('cls')
-
-    # for mac and linux(here, os.name is 'posix')
-    else:
-        _ = os.system('clear')
 
 parseArguments()
 net=args.network
@@ -122,25 +110,16 @@ hex_K=bit.utils.bytes_to_hex(key.public_key,True)
 hex_hash160=hash160(key).hex()
 bech32=bech32enc(hash160(key), net) 
 
-clear()
-
-wallet={'network': 'bitcoin '+net,
-        'private': hex_k,
-        'public': hex_K,
-        'hash160': hex_hash160,
-        'WIF': key.to_wif(),
-        'p2pkh': key.address,
-        'p2wpkh-ps2h': key.segwit_address,
-        'p2wpkh': bech32
-        }
-
-
-""" printing formatted wallet """
-print("**WALLET**\n")
-for i in wallet.keys():
-    print ("{:12}: {:12}".format(i, wallet[i]))
-print()
-
+""" printing results """
+print("\n\tBitcoin Paper wallet generated")
+print("\tNetwork:                   ", net)
+print("\tPrivate key:               ", (str(hex_k)))
+print("\tPublic key:                ", (str(hex_K)))
+print("\tHash160:                   ", str(hex_hash160) )
+print("\tWIF:                       ", str (key.to_wif() ) )
+print("\tp2pkh address:             ", str (key.address ) )
+print("\tp2wpkh-p2sh address:       ", str (key.segwit_address ) )
+print("\tp2wpkh(bech32) address:    ", str ( bech32))
 
 """ creating png qrcodes images """
 try:
@@ -152,9 +131,9 @@ try:
     qr_wif.save("p2pkh.png")
     qr_bech32= qrcode.make( str(bech32) )
     qr_wif.save("p2wpkh.png")
-    print ("QRCODES: {:12}".format("Created"))
+    print("\tQRcode images:             ","Created")
 except:
-    print ("QRCODES: {:12}".format("Error"))
+    print("\tQRcode images:             ","Error")
 
 
 
