@@ -35,9 +35,9 @@ except ImportError:
 
 """ system constants """
 
-NOISE_SAMPLE        = 30     # main sampling seconds
+NOISE_SAMPLE        = 5     # main sampling seconds
 SHA256_ROUNDS       = 2048  # sha256 rounds (number)
-NOISE_SAMPLE_SALT   = 5     # salt sampling seconds
+NOISE_SAMPLE_SALT   = 3     # salt sampling seconds
 SAMPLE_RATE         = 44100 # samplerate
 SAMPLING_FMT        = 'wav'
 
@@ -91,40 +91,50 @@ def getNoise256():
     (noise,salt) =( hashlib.sha256(bytearray(b''.join(noise0))).hexdigest() , hashlib.sha256(bytearray(b''.join(salt0))).hexdigest() )
     for i in range(0,SHA256_ROUNDS):
         noise=getsha256(noise+salt)
-        ##print ("noise %s salt %s" % (noise,salt))
     return noise
 
 def clear():
-    """ clear screen """
+    """ clears screen """
     # for windows
     if os.name == 'nt':
         _ = os.system('cls')
-
     # for mac and linux(here, os.name is 'posix')
     else:
         _ = os.system('clear')
 
-parseArguments()
-net=args.network
 
-""" use sounddevice if available, otherwise use arec command """
-print("Getting randomness from mic.. please wait")
-priv=getRandNoise() if mode=='arec' else getNoise256()
+def qrGen(oWallet):
+   """ generate QR codes for WIF key and addresses """
+   try:
+      qr_wif,qr_addr,qr_segwit,qr_bech32 =  qrcode.make(oWallet['WIF']), \
+                                            qrcode.make(oWallet['p2pkh'] ), \
+                                            qrcode.make(oWallet['p2wpkh-ps2h']), \
+                                            qrcode.make(oWallet['p2wpkh'])
+      qr_wif.save("WIF.png")
+      qr_addr.save("p2pkh.png")
+      qr_segwit.save("p2wpkh-p2sh.png")
+      qr_bech32.save("p2wpkh.png")
+      return True
+   except:
+      return False
 
-""" define the key object """
-key=bit.Key.from_hex(priv) if net=='mainnet' else bit.PrivateKeyTestnet.from_hex(priv)
+def main():
+  """ use sounddevice if available, otherwise use arec command """
+  print("Getting randomness from mic.. please wait")
+  priv=getRandNoise() if mode=='arec' else getNoise256()
 
-""" private and public key values in hex format """
-hex_k=key.to_hex()
-hex_K=bit.utils.bytes_to_hex(key.public_key,True)
+  """ define the key object """
+  key=bit.Key.from_hex(priv) if net=='mainnet' else bit.PrivateKeyTestnet.from_hex(priv)
 
-""" calculate hash160 and bech32 address """
-hex_hash160=hash160(key).hex()
-bech32=bech32enc(hash160(key), net) 
+  """ private and public key values in hex format """
+  hex_k=key.to_hex()
+  hex_K=bit.utils.bytes_to_hex(key.public_key,True)
 
-clear()
+  """ calculate hash160 and bech32 address """
+  hex_hash160=hash160(key).hex()
+  bech32=bech32enc(hash160(key), net) 
 
-wallet={'network': 'bitcoin '+net,
+  wallet={'network': 'bitcoin '+net,
         'private': hex_k,
         'public': hex_K,
         'hash160': hex_hash160,
@@ -135,23 +145,20 @@ wallet={'network': 'bitcoin '+net,
         }
 
 
-""" printing formatted wallet """
-print("**WALLET**\n")
-for i in wallet.keys():
-    print ("{:12}: {:12}".format(i, wallet[i]))
-print()
+  clear()
+  """ printing formatted wallet """
+  print("**WALLET**\n")
+  for i in wallet.keys():
+      print ("{:12}: {:12}".format(i, wallet[i]))
+  print()
+
+  """ just tell if qrcodes are generated correctly """
+  mess="QRCODES: {:12}".format("Created") if qrGen(wallet) else "QRCODES: {:12}".format("Error")
+  print(mess)
 
 
-""" creating png qrcodes images """
-try:
-    qr_wif,qr_addr,qr_segwit,qr_bech32 = qrcode.make(wallet['WIF']), qrcode.make(wallet['p2pkh'] ), qrcode.make(wallet['p2wpkh-ps2h']), qrcode.make(wallet['p2wpkh'])
-    qr_wif.save("WIF.png")
-    qr_addr.save("p2pkh.png")
-    qr_segwit.save("p2wpkh-p2sh.png")
-    qr_bech32.save("p2wpkh.png")
-    print ("QRCODES: {:12}".format("Created"))
-except:
-    print ("QRCODES: {:12}".format("Error"))
-
-
+if __name__ == "__main__":
+    parseArguments()
+    net=args.network
+    main()
 
