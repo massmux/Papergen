@@ -49,7 +49,9 @@ def parseArguments():
     global args
     parser = argparse.ArgumentParser("papergen.py")
     parser.add_argument("-n","--network", help="Specify network. Choose \
-                    mainnet or testnet, default mainnet", type=str, required=True, choices=['mainnet','testnet'],default='mainnet')
+                        mainnet or testnet, default mainnet", type=str, required=True, choices=['mainnet','testnet'],default='mainnet')
+    parser.add_argument("-d","--denomination", help="Specify a name for your wallet.", \
+                        type=str, required=False, default='default')
     args = parser.parse_args()
 
 
@@ -69,8 +71,7 @@ def getsha256(z):
 def getRandNoise():
     """
     creating unique noise by sampling entropy and salting it for SHA256_ROUNDS / use arecord+sha256 OS commands
-    this function is better when no equivalent library is available.
-    Returns sha256 salt hashed noise
+    this function is better when no equivalent library is available. Returns sha256 salt hashed noise
     """
     mycmd=subprocess.getoutput('arecord -d %s -f dat -t %s -q | sha256sum -b' %  (str(NOISE_SAMPLE),SAMPLING_FMT ))
     hash0=mycmd[:64]
@@ -103,7 +104,7 @@ def clear():
         _ = os.system('clear')
 
 
-def qrGen(oWallet):
+def qrGen(oWallet,wName):
    """ generate QR codes for WIF key and addresses """
    try:
       (qr_wif,qr_addr,qr_segwit,qr_bech32) =(qrcode.make(oWallet['WIF']), 
@@ -111,10 +112,10 @@ def qrGen(oWallet):
                                             qrcode.make(oWallet['p2wpkh-ps2h']),
                                             qrcode.make(oWallet['p2wpkh'])
                                             )
-      qr_wif.save("WIF.png")
-      qr_addr.save("p2pkh.png")
-      qr_segwit.save("p2wpkh-p2sh.png")
-      qr_bech32.save("p2wpkh.png")
+      qr_wif.save(wName+"-WIF.png")
+      qr_addr.save(wName+"-p2pkh.png")
+      qr_segwit.save(wName+"-p2wpkh-p2sh.png")
+      qr_bech32.save(wName+"-p2wpkh.png")
       return True
    except:
       return False
@@ -135,14 +136,15 @@ def main():
   hex_hash160=hash160(key).hex()
   bech32=bech32enc(hash160(key), net) 
 
-  wallet={'network': 'bitcoin '+net,
-        'private': hex_k,
-        'public': hex_K,
-        'hash160': hex_hash160,
-        'WIF': key.to_wif(),
-        'p2pkh': key.address,
-        'p2wpkh-ps2h': key.segwit_address,
-        'p2wpkh': bech32
+  wallet={  'name': wName,
+            'network': 'bitcoin '+net,
+            'private': hex_k,
+            'public': hex_K,
+            'hash160': hex_hash160,
+            'WIF': key.to_wif(),
+            'p2pkh': key.address,
+            'p2wpkh-ps2h': key.segwit_address,
+            'p2wpkh': bech32
         }
 
 
@@ -154,12 +156,13 @@ def main():
   print()
 
   """ just tell if qrcodes are generated correctly """
-  mess="QRCODES: {:12}".format("Created") if qrGen(wallet) else "QRCODES: {:12}".format("Error")
+  mess="QRCODES: {:12}".format("Created") if qrGen(wallet,wName) else "QRCODES: {:12}".format("Error")
   print(mess)
 
 
 if __name__ == "__main__":
     parseArguments()
-    net=args.network
+    net = args.network
+    wName = args.denomination
     main()
 

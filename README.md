@@ -35,13 +35,14 @@ Bitcoin paperwallet generator by mic entropy
  to be run on an offline clean computer only. Better using a live distro like tails.
 
 ```
-usage: papergen.py [-h] -n {mainnet,testnet}
+usage: papergen.py [-h] -n {mainnet,testnet} [-d DENOMINATION]
 
 optional arguments:
   -h, --help            show this help message and exit
   -n {mainnet,testnet}, --network {mainnet,testnet}
                         Specify network. Choose mainnet or testnet, default mainnet
-
+  -d DENOMINATION, --denomination DENOMINATION
+                        Specify a name for your wallet.
 
 ```
 
