@@ -35,9 +35,9 @@ except ImportError:
 
 """ system constants """
 
-NOISE_SAMPLE        = 5     # main sampling seconds
+NOISE_SAMPLE        = 30    # main sampling seconds
 SHA256_ROUNDS       = 2048  # sha256 rounds (number)
-NOISE_SAMPLE_SALT   = 3     # salt sampling seconds
+NOISE_SAMPLE_SALT   = 5     # salt sampling seconds
 SAMPLE_RATE         = 44100 # samplerate
 SAMPLING_FMT        = 'wav'
 
@@ -106,10 +106,11 @@ def clear():
 def qrGen(oWallet):
    """ generate QR codes for WIF key and addresses """
    try:
-      qr_wif,qr_addr,qr_segwit,qr_bech32 =  qrcode.make(oWallet['WIF']), \
-                                            qrcode.make(oWallet['p2pkh'] ), \
-                                            qrcode.make(oWallet['p2wpkh-ps2h']), \
+      (qr_wif,qr_addr,qr_segwit,qr_bech32) =(qrcode.make(oWallet['WIF']), 
+                                            qrcode.make(oWallet['p2pkh'] ), 
+                                            qrcode.make(oWallet['p2wpkh-ps2h']),
                                             qrcode.make(oWallet['p2wpkh'])
+                                            )
       qr_wif.save("WIF.png")
       qr_addr.save("p2pkh.png")
       qr_segwit.save("p2wpkh-p2sh.png")
