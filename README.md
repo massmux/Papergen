@@ -49,6 +49,64 @@ optional arguments:
 
 ```
 
+## Examples
+
+ Generating a standard single address standalone paperwallet on the testnet. The entropy is gathered from the mic noise.
+
+```
+$ ./papergen.py -t jbok -n testnet -d example_wallet
+
+** WALLET JBOK **
+
+name        : example_wallet
+network     : bitcoin testnet
+private     : b7323b3ed16bcff0f2b709bfdc36d89e5a07e40312e47884ed2d7f9b8d655589
+public      : 03CDEAE3E2229E7DE4D9D9A35230CD043179FA9B57D1F5E803D39CAA7014934961
+hash160     : c27f8966f6b3dea80de797676baf8f188702fe31
+WIF         : cTiozx2fiTPfxXn6Bh3Ht1UwFpTWeBVJr3XkqowqmRVK3TmcFmTz
+p2pkh       : myFNAgBHtumF2GMisq1zepAq3jPYCkpwQo
+p2wpkh-ps2h : 2N7vu7XyGUuRAkeRHN1LZB14fh57kwq4LRr
+p2wpkh      : tb1qcflcjehkk002sr08jankhtu0rzrs9l33x8xrv6
+
+QRCODES: Created     
+```
+ Generating a HD bip39 mnemonic 24words sequence. The entropy is gathered from the mic noise.
+
+```
+$ ./papergen.py -t bip39
+
+** WALLET HD Bip39 24 words mnemonic **
+
+[] Single line output
+detail rail fruit utility nasty awful dismiss valve bridge tenant subject drop sudden chunk project baby honey melody misery fire name sail pill abstract
+
+[] Numbered list output
+           1: detail      
+           2: rail        
+           3: fruit       
+           4: utility     
+           5: nasty       
+           6: awful       
+           7: dismiss     
+           8: valve       
+           9: bridge      
+          10: tenant      
+          11: subject     
+          12: drop        
+          13: sudden      
+          14: chunk       
+          15: project     
+          16: baby        
+          17: honey       
+          18: melody      
+          19: misery      
+          20: fire        
+          21: name        
+          22: sail        
+          23: pill        
+          24: abstract
+```
+
 ## Refs
 
  Please refer to https://www.massmux.com for more infos.
