@@ -5,3 +5,4 @@ bit
 bech32
 qrcode
 sounddevice
+NumPy
