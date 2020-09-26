@@ -23,8 +23,7 @@
 
 
 import sys,os,argparse
-#import qrcode
-import mic
+import entropy as ee
 import keys
 
 
@@ -41,8 +40,8 @@ def parseArguments():
     args = parser.parse_args()
 
 
+""" just helper func """
 def clear():
-    """ clears screen """
     # for windows
     if os.name == 'nt':
         _ = os.system('cls')
@@ -51,10 +50,10 @@ def clear():
         _ = os.system('clear')
 
 
-
 def main():
   print("Getting randomness from mic.. please wait")
-  priv=mic.getRandNoise() if mic.mode=='arec' else mic.getNoise256()
+  a = ee.entropy('mic')
+  priv = a.getEntropy()
   clear()
   if wType=='jbok':
      jwallet=keys.wallet(wType,wName,net)
