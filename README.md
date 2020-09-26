@@ -5,11 +5,13 @@ Bitcoin paperwallet generator by mic entropy or by webcam input
 
  Since true entropy from microphone is used, please be assured that your computer audio works, your microphone is active and works taking noise from the environment. Should microphone is off or not working, the entropy source would compromised and your resulting wallet would be not secure.
 
+ If entropy from webcam is used, please be assured that your computer webcam works. Your webcam infact will take a certain amount of photos in order to get randomness. Should webcam is of or not working, the entropy source would be compromised and you resulting wallet would be not secure.
+
  It supports mainnet and testnet. It provides the following bitcoin address formats: p2pkh ; p2wpkh-p2sh ; p2wpkh
 
- Added feature: now you can specify -d bip39 in order to get a true random generated HD wallet by 24 words sequence. In this case the network choice has no influece. A 24words bip39 HD mnemonic output is returned.
+ - Added feature: now you can specify -d bip39 in order to get a true random generated HD wallet by 24 words sequence. In this case the network choice has no influece. A 24words bip39 HD mnemonic output is returned.
 
- Added feature: now you can specify -e photo or -e mic in order to choose between webcam generated entropy or microphone generate entropy
+ - Added feature: now you can specify -e photo or -e mic in order to choose between webcam generated entropy or microphone generate entropy
 
 ## Standard install
 
@@ -59,7 +61,7 @@ optional arguments:
  Generating a standard single address standalone paperwallet on the testnet. The entropy is gathered from the mic noise.
 
 ```
-$ ./papergen.py -t jbok -n testnet -d example_wallet
+$ ./papergen.py -t jbok -n testnet -d example_wallet -e photo
 
 ** WALLET JBOK **
 
