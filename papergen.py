@@ -23,7 +23,7 @@
 
 
 import sys,os,argparse
-import qrcode
+#import qrcode
 import mic
 import keys
 
@@ -51,28 +51,15 @@ def clear():
         _ = os.system('clear')
 
 
-def qrGen(oWallet,wName):
-   """ generate QR codes for WIF key and addresses """
-   try:
-      (qr_wif,qr_addr,qr_segwit,qr_bech32) =(qrcode.make(oWallet['WIF']), 
-                                            qrcode.make(oWallet['p2pkh'] ), 
-                                            qrcode.make(oWallet['p2wpkh-ps2h']),
-                                            qrcode.make(oWallet['p2wpkh'])
-                                            )
-      qr_wif.save(wName+"-WIF.png")
-      qr_addr.save(wName+"-p2pkh.png")
-      qr_segwit.save(wName+"-p2wpkh-p2sh.png")
-      qr_bech32.save(wName+"-p2wpkh.png")
-      return True
-   except:
-      return False
 
 def main():
   print("Getting randomness from mic.. please wait")
   priv=mic.getRandNoise() if mic.mode=='arec' else mic.getNoise256()
   clear()
   if wType=='jbok':
-     wallet=keys.getJBOK(priv,net,wName)
+     jwallet=keys.wallet(wType,wName,net)
+     jwallet.setEntropy(priv)
+     wallet=jwallet.getJBOK()
 
      """ printing formatted wallet """
      print("** WALLET JBOK **\n")
@@ -81,11 +68,14 @@ def main():
      print()
 
      """ just tell if qrcodes are generated correctly """
-     mess="QRCODES: {:12}".format("Created") if qrGen(wallet,wName) else "QRCODES: {:12}".format("Error")
+     mess="QRCODES: {:12}".format("Created") if jwallet.qrGen() else "QRCODES: {:12}".format("Error")
      print(mess)
+
   else:
      print("** WALLET HD Bip39 24 words mnemonic **\n")
-     words=keys.getBip39(priv)
+     jwallet=keys.wallet(wType)
+     jwallet.setEntropy(priv)
+     words=jwallet.getBip39()
      print("[] Single line output")
      print(words+"\n")
      words_arr=words.split(" ")
