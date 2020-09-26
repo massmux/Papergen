@@ -2,8 +2,6 @@
 
 #   Copyright (C) 2019-2020 Denali Sàrl www.denali.swiss, Massimo Musumeci, @massmux
 #
-#   This file is a script to calculate a paper wallet by mic gathered randomness
-#
 #   It is subject to the license terms in the LICENSE file found in the top-level
 #   directory of this distribution.
 #
