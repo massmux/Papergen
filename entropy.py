@@ -77,6 +77,7 @@ class entropy():
 
 
     def _getImgRnd(self):
+        """ salt hashing and converting image data into 256 bits final hash """
         img_rnd_result= self._getsha256( str(self.img_rnd['base'] ) ) 
         salt = self._getsha256(str( self.img_rnd['salt'] ) )
         for i in range(0,2048):
@@ -84,7 +85,7 @@ class entropy():
         return img_rnd_result
 
     def _takePhoto(self):
-        """ taking multiple photos from webcam in order to create randomness """
+        """ taking multiple photos from webcam in order to create randomness. Returns data and salt """
         camera = cv2.VideoCapture(0)
         (all_data,all_salt)=("","")
         for i in range(IMG_SAMPLES):
