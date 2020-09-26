@@ -9,6 +9,8 @@ Bitcoin paperwallet generator by mic entropy
 
  Added feature: now you can specify -d bip39 in order to get a true random generated HD wallet by 24 words sequence. In this case the network choice has no influece. A 24words bip39 HD mnemonic output is returned.
 
+ Added feature: now you can specify -e photo or -e mic in order to choose between webcam generated entropy or microphone generate entropy
+
 ## Standard install
 
 ```
@@ -36,7 +38,7 @@ Bitcoin paperwallet generator by mic entropy
  to be run on an offline clean computer only. Better using a live distro like tails.
 
 ```
-usage: papergen.py [-h] [-t {jbok,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION]
+usage: papergen.py [-h] [-t {jbok,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -46,6 +48,9 @@ optional arguments:
                         Specify network. Choose mainnet or testnet for jbok type, default mainnet
   -d DENOMINATION, --denomination DENOMINATION
                         Specify a name for your wallet.
+  -e {mic,photo}, --entropy {mic,photo}
+                        Specify entropy source. Choose mic or photo, default mic
+
 
 ```
 

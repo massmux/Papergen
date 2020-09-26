@@ -4,6 +4,7 @@
 #   Copyright (C) 2019-2020 Denali Sàrl www.denali.swiss, Massimo Musumeci, @massmux
 #
 #   This file is a script to calculate a paper wallet by mic gathered randomness
+#   or by webcam generated randomness
 #
 #   It is subject to the license terms in the LICENSE file found in the top-level
 #   directory of this distribution.
@@ -37,6 +38,8 @@ def parseArguments():
                         mainnet or testnet for jbok type, default mainnet", type=str, required=False, choices=['mainnet','testnet'],default='mainnet')
     parser.add_argument("-d","--denomination", help="Specify a name for your wallet.", \
                         type=str, required=False, default='default')
+    parser.add_argument("-e","--entropy", help="Specify entropy source. Choose \
+                        mic or photo, default mic", type=str, required=False, choices=['mic','photo'],default='mic')
     args = parser.parse_args()
 
 
@@ -51,9 +54,9 @@ def clear():
 
 
 def main():
-  print("Getting randomness from mic.. please wait")
-  a = ee.entropy('mic')
-  ## a = ee.entropy('img')  #going to add this feature
+  a = ee.entropy(entropy_source)
+  working_message="Getting randomness from mic.. please wait" if entropy_source=='mic' else "Getting randomness from webcam.. please wait"
+  print (working_message)
   priv = a.getEntropy()
   clear()
   if wType=='jbok':
@@ -88,6 +91,6 @@ def main():
 
 if __name__ == "__main__":
     parseArguments()
-    (net,wName,wType)=(args.network,args.denomination,args.type)
+    (net,wName,wType,entropy_source)=(args.network,args.denomination,args.type,args.entropy)
     main()
 

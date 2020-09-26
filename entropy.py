@@ -38,6 +38,8 @@ SHA256_ROUNDS       = 2048  # sha256 rounds (number)
 NOISE_SAMPLE_SALT   = 5     # salt sampling seconds
 SAMPLE_RATE         = 44100 # samplerate
 SAMPLING_FMT        = 'wav'
+IMG_SAMPLES         = 64
+IMG_SAMPLES_SALT    = 8
 
 class entropy():
 
@@ -74,24 +76,6 @@ class entropy():
         return noise
 
 
-    def _takePhoto(self):
-        camera = cv2.VideoCapture(0)
-        for i in range(2):
-            return_value, image = camera.read()
-            cv2.imwrite('photoxx'+str(i)+'.png', image)
-        del(camera)
-        with open("photoxx0.png", "rb") as imageFile:
-            base = base64.b64encode(imageFile.read())
-        with open("photoxx1.png", "rb") as imageFile:
-            salt = base64.b64encode(imageFile.read())
-        self.img_rnd={  'base': base,
-                        'salt': salt
-                    }
-        os.remove("photoxx0.png") 
-        os.remove("photoxx1.png") 
-        return self.img_rnd
-
-
     def _getImgRnd(self):
         img_rnd_result= self._getsha256( str(self.img_rnd['base'] ) ) 
         salt = self._getsha256(str( self.img_rnd['salt'] ) )
@@ -99,12 +83,29 @@ class entropy():
             img_rnd_result=self._getsha256(img_rnd_result+salt)
         return img_rnd_result
 
+    def _takePhoto(self):
+        """ taking multiple photos from webcam in order to create randomness """
+        camera = cv2.VideoCapture(0)
+        (all_data,all_salt)=("","")
+        for i in range(IMG_SAMPLES):
+            return_value, image = camera.read()
+            ocurrent = base64.b64encode(image)
+            all_data=all_data+str(ocurrent)
+        for z in range(IMG_SAMPLES_SALT):
+            return_value, image = camera.read()
+            ocurrent = base64.b64encode(image)
+            all_salt=all_salt+str(ocurrent)
+        del(camera)
+        self.img_rnd={  'base': all_data,
+                        'salt': all_salt
+                    }
+        return self.img_rnd
 
     def getEntropy(self):
         """ returns true entropy from chosen source """
         if self.source=='mic':
             self.entropy=self._getMicArec() if mode=='arec' else self._getMicSd()
-        elif self.source=='img':
+        elif self.source=='photo':
             self._takePhoto()
             self.entropy=self._getImgRnd()
         return self.entropy
