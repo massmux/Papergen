@@ -40,19 +40,19 @@ Bitcoin paperwallet generator by mic entropy or by webcam input
  to be run on an offline clean computer only. Better using a live distro like tails.
 
 ```
-usage: papergen.py [-h] [-t {jbok,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}]
+
+usage: papergen.py [-h] [-t {single,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -t {jbok,bip39}, --type {jbok,bip39}
-                        Specify wallet type. Choose jbok (single standalone address) or bip39 HD(mnemonic), default JBOK
+  -t {single,bip39}, --type {single,bip39}
+                        Specify wallet type. Choose 'single' standalone address or 'bip39' HD(mnemonic), default single
   -n {mainnet,testnet}, --network {mainnet,testnet}
-                        Specify network. Choose mainnet or testnet for jbok type, default mainnet
+                        Specify network. Choose mainnet or testnet, default mainnet
   -d DENOMINATION, --denomination DENOMINATION
                         Specify a name for your wallet.
   -e {mic,photo}, --entropy {mic,photo}
                         Specify entropy source. Choose mic or photo, default mic
-
 
 ```
 
@@ -61,7 +61,7 @@ optional arguments:
  Generating a standard single address standalone paperwallet on the testnet. The entropy is gathered from the mic noise.
 
 ```
-$ ./papergen.py -t jbok -n testnet -d example_wallet -e photo
+$ ./papergen.py -t single -n testnet -d example_wallet -e photo
 
 ** WALLET JBOK **
 

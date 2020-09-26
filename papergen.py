@@ -33,9 +33,9 @@ def parseArguments():
     global args
     parser = argparse.ArgumentParser("papergen.py")
     parser.add_argument("-t","--type", help="Specify wallet type. Choose \
-                        jbok (single standalone address) or bip39 HD(mnemonic), default JBOK", type=str, required=False, choices=['jbok','bip39'],default='jbok')
+                        'single' standalone address or 'bip39' HD(mnemonic), default single", type=str, required=False, choices=['single','bip39'],default='single')
     parser.add_argument("-n","--network", help="Specify network. Choose \
-                        mainnet or testnet for jbok type, default mainnet", type=str, required=False, choices=['mainnet','testnet'],default='mainnet')
+                        mainnet or testnet, default mainnet", type=str, required=False, choices=['mainnet','testnet'],default='mainnet')
     parser.add_argument("-d","--denomination", help="Specify a name for your wallet.", \
                         type=str, required=False, default='default')
     parser.add_argument("-e","--entropy", help="Specify entropy source. Choose \
@@ -59,7 +59,7 @@ def main():
   print (working_message)
   priv = a.getEntropy()
   clear()
-  if wType=='jbok':
+  if wType=='single':
      jwallet=keys.wallet(wType,wName,net)
      jwallet.setEntropy(priv)
      wallet=jwallet.getJBOK()
