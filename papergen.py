@@ -67,7 +67,7 @@ def main():
         print ("{:12}: {:12}".format(i, wallet[i]))
      print()
 
-     """ just tell if qrcodes are generated correctly """
+     """ just check if qrcodes are generated correctly """
      mess="QRCODES: {:12}".format("Created") if jwallet.qrGen() else "QRCODES: {:12}".format("Error")
      print(mess)
 

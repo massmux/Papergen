@@ -53,16 +53,16 @@ class wallet():
         self.wallet_name=wName
         return wName
 
-    def hash160(self,keyobj):
+    def _hash160(self,keyobj):
         ripemd160=hashlib.new("ripemd160")
         ripemd160.update(hashlib.sha256(keyobj.public_key).digest())
         return ripemd160.digest()
 
-    def bech32enc(self,ohash160,network='mainnet'):
+    def _bech32enc(self,ohash160,network='mainnet'):
         bechenc=bech32.encode("bc",0,ohash160) if network=='mainnet' else bech32.encode("tb",0,ohash160)
         return bechenc
 
-    def getsha256(self,z):
+    def _getsha256(self,z):
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
 
     def qrGen(self):
@@ -93,8 +93,8 @@ class wallet():
       hex_K=bit.utils.bytes_to_hex(key.public_key,True)
 
       """ calculate hash160 and bech32 address """
-      hex_hash160=self.hash160(key).hex()
-      bech32=self.bech32enc(self.hash160(key), self.network)
+      hex_hash160=self._hash160(key).hex()
+      bech32=self._bech32enc(self._hash160(key), self.network)
 
       wallet={  'name': self.wallet_name,
             'network': 'bitcoin '+ self.network,
@@ -113,7 +113,7 @@ class wallet():
     def getBip39(self):
         """ creates a bip39 full entropic mnemonic as a HD wallet """
         mnemo = Mnemonic('english')
-        hash0=self.getsha256(self.entropy)
+        hash0=self._getsha256(self.entropy)
         entropy_b = bytearray(hash0, 'utf-8')
         entropy_hash =hashlib.sha256(entropy_b).digest()
         entropy = hexlify(entropy_hash)
