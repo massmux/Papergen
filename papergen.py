@@ -53,6 +53,7 @@ def clear():
 def main():
   print("Getting randomness from mic.. please wait")
   a = ee.entropy('mic')
+  ## a = ee.entropy('img')  #going to add this feature
   priv = a.getEntropy()
   clear()
   if wType=='jbok':

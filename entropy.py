@@ -20,7 +20,9 @@
 
 
 
-import subprocess,hashlib
+import subprocess,os
+import hashlib
+import cv2,base64
 
 """ check if sounddevice lib is available, if it is then gets imported """
 try:
@@ -49,8 +51,7 @@ class entropy():
 
     def _getMicArec(self):
         """
-        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS / use arecord+sha256 OS commands
-        this function is better when no equivalent library is available. Returns sha256 salt hashed noise
+        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise. arec command
         """
         mycmd=subprocess.getoutput('arecord -d %s -f dat -t %s -q | sha256sum -b' %  (str(NOISE_SAMPLE),SAMPLING_FMT ))
         hash0=mycmd[:64]
@@ -63,8 +64,7 @@ class entropy():
 
     def _getMicSd(self):
         """
-        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS / use python lib
-        Returns sha256 salt hashed noise
+        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise. python lib
         """
         noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
         salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2, blocking=True)
@@ -74,9 +74,38 @@ class entropy():
         return noise
 
 
+    def _takePhoto(self):
+        camera = cv2.VideoCapture(0)
+        for i in range(2):
+            return_value, image = camera.read()
+            cv2.imwrite('photoxx'+str(i)+'.png', image)
+        del(camera)
+        with open("photoxx0.png", "rb") as imageFile:
+            base = base64.b64encode(imageFile.read())
+        with open("photoxx1.png", "rb") as imageFile:
+            salt = base64.b64encode(imageFile.read())
+        self.img_rnd={  'base': base,
+                        'salt': salt
+                    }
+        os.remove("photoxx0.png") 
+        os.remove("photoxx1.png") 
+        return self.img_rnd
+
+
+    def _getImgRnd(self):
+        img_rnd_result= self._getsha256( str(self.img_rnd['base'] ) ) 
+        salt = self._getsha256(str( self.img_rnd['salt'] ) )
+        for i in range(0,2048):
+            img_rnd_result=self._getsha256(img_rnd_result+salt)
+        return img_rnd_result
+
+
     def getEntropy(self):
         """ returns true entropy from chosen source """
         if self.source=='mic':
             self.entropy=self._getMicArec() if mode=='arec' else self._getMicSd()
+        elif self.source=='img':
+            self._takePhoto()
+            self.entropy=self._getImgRnd()
         return self.entropy
     
