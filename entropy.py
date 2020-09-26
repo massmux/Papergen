@@ -41,6 +41,7 @@ class entropy():
 
     def __init__(self,source='mic'):
         self.source=source
+        self.entropy=0
         return
 
     def _getsha256(self,z):
@@ -75,9 +76,7 @@ class entropy():
 
     def getEntropy(self):
         """ returns true entropy from chosen source """
-        entropy=""
         if self.source=='mic':
-            entropy=self._getMicArec() if mode=='arec' else self._getMicSd()
-        self.entropy=entropy
+            self.entropy=self._getMicArec() if mode=='arec' else self._getMicSd()
         return self.entropy
     
