@@ -3,9 +3,9 @@ Bitcoin paperwallet generator by mic entropy or by webcam input
 
  generate a bitcoin paper wallet by gathering entropy from computer microphone. The script calculates the main addresses and shows results. It's important to run on an offline computer, better if with onthefly distro like tails. Network must be down so that no internet connection is active. The script does not need to be online for any purpose.
 
- Since true entropy from microphone is used, please be assured that your computer audio works, your microphone is active and works taking noise from the environment. Should microphone is off or not working, the entropy source would compromised and your resulting wallet would be not secure.
+ Since true entropy from microphone is used, please be assured that your computer audio works, your microphone is active and works taking noise from the environment. Should microphone is off or not working, the entropy source would compromised and your resulting wallet would be not secure. For optimal result you should have a source of noise in front of microphone.
 
- If entropy from webcam is used, please be assured that your computer webcam works. Your webcam infact will take a certain amount of photos in order to get randomness. Should webcam is of or not working, the entropy source would be compromised and you resulting wallet would be not secure.
+ If entropy from webcam is used, please be assured that your computer webcam works. Your webcam infact will take a certain amount of photos in order to get randomness. Should webcam is of or not working, the entropy source would be compromised and you resulting wallet would be not secure. For optimal result you should have the webcam pointed towards something moving fastly in front of it.
 
  It supports mainnet and testnet. It provides the following bitcoin address formats: p2pkh ; p2wpkh-p2sh ; p2wpkh
 
