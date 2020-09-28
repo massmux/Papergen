@@ -13,6 +13,8 @@ Bitcoin paperwallet generator by mic entropy or by webcam input
 
  - Added feature: now you can specify -e photo or -e mic in order to choose between webcam generated entropy or microphone generate entropy
 
+ - Added feature: now you can specify the -w flag in order to choose a recipient key (gpg) to write an encrypted wallet file locally. This means that the wallet is created, shown on the monitor and written as an encrypted ascii file using the public key specified by the flag. The filename is the same as the wallet denomination
+
 ## Standard install
 
 ```
@@ -40,8 +42,7 @@ Bitcoin paperwallet generator by mic entropy or by webcam input
  to be run on an offline clean computer only. Better using a live distro like tails.
 
 ```
-
-usage: papergen.py [-h] [-t {single,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}]
+usage: papergen.py [-h] [-t {single,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}] [-w WRITE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -53,6 +54,8 @@ optional arguments:
                         Specify a name for your wallet.
   -e {mic,photo}, --entropy {mic,photo}
                         Specify entropy source. Choose mic or photo, default mic
+  -w WRITE, --write WRITE
+                        Specify the recipient public key to use for creating an gpg encrypted file with the wallet
 
 ```
 
