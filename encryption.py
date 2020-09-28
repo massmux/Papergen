@@ -22,7 +22,7 @@
 
 import gnupg
 
-gpg = gnupg.GPG(gnupghome="/home/massmux/.gnupg")
+gpg = gnupg.GPG()
 
 
 def encData(fname,odata,recipient):
