@@ -26,6 +26,7 @@
 import sys,os,argparse
 import entropy as ee
 import keys
+import encryption as enc
 
 
 """ parsing arguments """
@@ -40,6 +41,8 @@ def parseArguments():
                         type=str, required=False, default='default')
     parser.add_argument("-e","--entropy", help="Specify entropy source. Choose \
                         mic or photo, default mic", type=str, required=False, choices=['mic','photo'],default='mic')
+    parser.add_argument("-w","--write", help="Specify the recipient public key to use for \
+                        creating an gpg encrypted file with the wallet", type=str, required=False, default='')
     args = parser.parse_args()
 
 
@@ -58,6 +61,7 @@ def main():
   working_message="Getting randomness from mic.. please wait" if entropy_source=='mic' else "Getting randomness from webcam.. please wait"
   print (working_message)
   priv = a.getEntropy()
+  oWallet=""
   clear()
   if wType=='single':
      jwallet=keys.wallet(wType,wName,net)
@@ -65,14 +69,22 @@ def main():
      wallet=jwallet.getJBOK()
 
      """ printing formatted wallet """
-     print("** WALLET JBOK **\n")
+     print("** WALLET JBOK/single **\n")
      for i in wallet.keys():
         print ("{:12}: {:12}".format(i, wallet[i]))
+        oWallet+="{:12}: {:12}\n".format(i, wallet[i])
      print()
 
-     """ just check if qrcodes are generated correctly """
-     mess="QRCODES: {:12}".format("Created") if jwallet.qrGen() else "QRCODES: {:12}".format("Error")
-     print(mess)
+     """ if a gpg recipient is specified then writing an encrypted file with wallet and omitting writing qrcodes """
+     if gpg_recipient != "":
+         if enc.encData(wName+".asc",oWallet,gpg_recipient):
+            print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
+         else:
+            print("GPG error, check keys!")
+     else:
+        """ just check if qrcodes are generated correctly """
+        mess="QRCODES: {:12}".format("Created") if jwallet.qrGen() else "QRCODES: {:12}".format("Error")
+        print(mess)
 
   else:
      print("** WALLET HD Bip39 24 words mnemonic **\n")
@@ -81,16 +93,23 @@ def main():
      words=jwallet.getBip39()
      print("[] Single line output")
      print(words+"\n")
+     oWallet=words+"\n"
      words_arr=words.split(" ")
      print("[] Numbered list output")
      n=1
      for i in words_arr:
         print ("{:12}: {:12}".format(n, i))
+        oWallet+="{:12}: {:12}\n".format(n, i)
         n+=1
+     if gpg_recipient != "":
+         if enc.encData(wName+".asc",oWallet,gpg_recipient):
+            print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
+         else:
+            print("GPG error, check keys!")
 
 
 if __name__ == "__main__":
     parseArguments()
-    (net,wName,wType,entropy_source)=(args.network,args.denomination,args.type,args.entropy)
+    (net,wName,wType,entropy_source,gpg_recipient)=(args.network,args.denomination,args.type,args.entropy,args.write)
     main()
 

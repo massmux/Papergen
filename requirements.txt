@@ -6,3 +6,4 @@ bech32
 qrcode
 sounddevice
 NumPy
+gpg
