@@ -91,6 +91,7 @@ def main():
      jwallet=keys.wallet(wType)
      jwallet.setEntropy(priv)
      words=jwallet.getBip39()
+     print("Generated entropy 256bits: %s\n" % str(priv))
      print("[] Single line output")
      print(words+"\n")
      oWallet=words+"\n"
