@@ -7,4 +7,6 @@ qrcode
 sounddevice
 NumPy
 gpg
+gnupg
+psutil
 opencv-python
