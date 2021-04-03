@@ -66,19 +66,21 @@ optional arguments:
 ```
 $ ./papergen.py -t single -n testnet -d example_wallet -e photo
 
-** WALLET JBOK **
+** WALLET JBOK/single **
 
-name        : example_wallet
-network     : bitcoin testnet
-private     : b7323b3ed16bcff0f2b709bfdc36d89e5a07e40312e47884ed2d7f9b8d655589
-public      : 03CDEAE3E2229E7DE4D9D9A35230CD043179FA9B57D1F5E803D39CAA7014934961
-hash160     : c27f8966f6b3dea80de797676baf8f188702fe31
-WIF         : cTiozx2fiTPfxXn6Bh3Ht1UwFpTWeBVJr3XkqowqmRVK3TmcFmTz
-p2pkh       : myFNAgBHtumF2GMisq1zepAq3jPYCkpwQo
-p2wpkh-ps2h : 2N7vu7XyGUuRAkeRHN1LZB14fh57kwq4LRr
-p2wpkh      : tb1qcflcjehkk002sr08jankhtu0rzrs9l33x8xrv6
+{
+    "name": "default",
+    "network": "bitcoin mainnet",
+    "private": "ee8601afe7d494313a347761ce5e98b185667864b61339e686f1535ec828aafe",
+    "public": "039CD8DA342B74FDBEB649A9CD590E51261845030C71F6C822C731624770CF1902",
+    "hash160": "dc6053c0872b832998bc6530778fc8eb923105dc",
+    "WIF": "L5DNNfPBZe8n9Atf47MEsxbMqv4c7p4BCKnuc4xQrPFjzYtoaV6G",
+    "p2pkh": "1M6F48bDSoLhx3VEK8pfYe687TUmVrsANX",
+    "p2wpkh-ps2h": "3Hi93DkVZcDRiG8BzsQNHmNRKrE8kHwyyH",
+    "p2wpkh": "bc1qm3s98sy89wpjnx9uv5c80r7gawfrzpwuswknzk"
+}
+QRCODES: Created    
 
-QRCODES: Created     
 ```
  Generating a HD bip39 mnemonic 24words sequence. The entropy is gathered from the mic noise.
 
@@ -87,34 +89,41 @@ $ ./papergen.py -t bip39
 
 ** WALLET HD Bip39 24 words mnemonic **
 
-[] Single line output
-detail rail fruit utility nasty awful dismiss valve bridge tenant subject drop sudden chunk project baby honey melody misery fire name sail pill abstract
+Generated entropy 256bits
+63e58dd572818f4a28c5459b10ebece49e66127e6f0ba36518a8c860cd0774d7
 
-[] Numbered list output
-           1: detail      
-           2: rail        
-           3: fruit       
-           4: utility     
-           5: nasty       
-           6: awful       
-           7: dismiss     
-           8: valve       
-           9: bridge      
-          10: tenant      
-          11: subject     
-          12: drop        
-          13: sudden      
-          14: chunk       
-          15: project     
-          16: baby        
-          17: honey       
-          18: melody      
-          19: misery      
-          20: fire        
-          21: name        
-          22: sail        
-          23: pill        
-          24: abstract
+Single line output
+nothing olive athlete attitude fold road damage practice infant aerobic wrap attract example digital master bright business crunch cloth weasel auto detect grit media
+
+Json output
+{
+    "1": "nothing",
+    "2": "olive",
+    "3": "athlete",
+    "4": "attitude",
+    "5": "fold",
+    "6": "road",
+    "7": "damage",
+    "8": "practice",
+    "9": "infant",
+    "10": "aerobic",
+    "11": "wrap",
+    "12": "attract",
+    "13": "example",
+    "14": "digital",
+    "15": "master",
+    "16": "bright",
+    "17": "business",
+    "18": "crunch",
+    "19": "cloth",
+    "20": "weasel",
+    "21": "auto",
+    "22": "detect",
+    "23": "grit",
+    "24": "media"
+}
+
+
 ```
 
 ## Refs
