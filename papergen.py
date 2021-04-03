@@ -27,6 +27,7 @@ import sys,os,argparse
 import entropy as ee
 import keys
 import encryption as enc
+import json
 
 
 """ parsing arguments """
@@ -58,6 +59,7 @@ def clear():
 
 def main():
   a = ee.entropy(entropy_source)
+  clear()
   working_message="Getting randomness from mic.. please wait" if entropy_source=='mic' else "Getting randomness from webcam.. please wait"
   print (working_message)
   priv = a.getEntropy()
@@ -67,17 +69,13 @@ def main():
      jwallet=keys.wallet(wType,wName,net)
      jwallet.setEntropy(priv)
      wallet=jwallet.getJBOK()
-
-     """ printing formatted wallet """
      print("** WALLET JBOK/single **\n")
-     for i in wallet.keys():
-        print ("{:12}: {:12}".format(i, wallet[i]))
-        oWallet+="{:12}: {:12}\n".format(i, wallet[i])
-     print()
+     single_json = json.dumps(wallet, indent=4, sort_keys=False,separators=(',', ': ') )
+     print(single_json)
 
      """ if a gpg recipient is specified then writing an encrypted file with wallet and omitting writing qrcodes """
      if gpg_recipient != "":
-         if enc.encData(wName+".asc",oWallet,gpg_recipient):
+         if enc.encData(wName+".asc",wallet,gpg_recipient):
             print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
          else:
             print("GPG error, check keys!")
@@ -91,22 +89,21 @@ def main():
      jwallet=keys.wallet(wType)
      jwallet.setEntropy(priv)
      words=jwallet.getBip39()
-     print("Generated entropy 256bits: %s\n" % str(priv))
-     print("[] Single line output")
-     print(words+"\n")
-     oWallet=words+"\n"
-     words_arr=words.split(" ")
-     print("[] Numbered list output")
+     print("Generated entropy 256bits\n%s\n" % str(priv))
+     print("Single line output\n%s\n" % words)
+     print("Json output")
      n=1
-     for i in words_arr:
-        print ("{:12}: {:12}".format(n, i))
-        oWallet+="{:12}: {:12}\n".format(n, i)
+     walletjson={}
+     for i in words.split(" "):
+        walletjson[n]=i
         n+=1
      if gpg_recipient != "":
-         if enc.encData(wName+".asc",oWallet,gpg_recipient):
+         if enc.encData(wName+".asc",words,gpg_recipient):
             print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
          else:
             print("GPG error, check keys!")
+     mnemonic_json = json.dumps(walletjson, indent=4, sort_keys=False,separators=(',', ': ') )
+     print (mnemonic_json)
 
 
 if __name__ == "__main__":
