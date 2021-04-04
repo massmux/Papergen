@@ -70,12 +70,12 @@ def main():
      jwallet.setEntropy(priv)
      wallet=jwallet.getJBOK()
      print("** WALLET JBOK/single **\n")
-     single_json = json.dumps(wallet, indent=4, sort_keys=False,separators=(',', ': ') )
-     print(single_json)
+     print(json.dumps(wallet, indent=4, sort_keys=False,separators=(',', ': ') )) 
+     single_json = json.dumps(wallet )
 
      """ if a gpg recipient is specified then writing an encrypted file with wallet and omitting writing qrcodes """
      if gpg_recipient != "":
-         if enc.encData(wName+".asc",wallet,gpg_recipient):
+         if enc.encData(wName+".asc",single_json,gpg_recipient):
             print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
          else:
             print("GPG error, check keys!")
@@ -97,13 +97,12 @@ def main():
      for i in words.split(" "):
         walletjson[n]=i
         n+=1
+     print( json.dumps(walletjson, indent=4, sort_keys=False,separators=(',', ': ') ) )
      if gpg_recipient != "":
-         if enc.encData(wName+".asc",words,gpg_recipient):
+         if enc.encData(wName+".asc",walletjson,gpg_recipient):
             print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
          else:
             print("GPG error, check keys!")
-     mnemonic_json = json.dumps(walletjson, indent=4, sort_keys=False,separators=(',', ': ') )
-     print (mnemonic_json)
 
 
 if __name__ == "__main__":
