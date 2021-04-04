@@ -68,15 +68,15 @@ def main():
   if wType=='single':
      jwallet=keys.wallet(wType,wName,net)
      jwallet.setEntropy(priv)
-     wallet=jwallet.getJBOK()
+     wallet_single=jwallet.getJBOK()
      print("** WALLET JBOK/single **\n")
-     print(json.dumps(wallet, indent=4, sort_keys=False,separators=(',', ': ') )) 
-     single_json = json.dumps(wallet )
+     print(json.dumps(wallet_single, indent=4, sort_keys=False,separators=(',', ': ') )) 
+     single_json = json.dumps(wallet_single )
 
      """ if a gpg recipient is specified then writing an encrypted file with wallet and omitting writing qrcodes """
      if gpg_recipient != "":
          if enc.encData(wName+".asc",single_json,gpg_recipient):
-            print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
+            print("Wrote armored gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
          else:
             print("GPG error, check keys!")
      else:
@@ -93,14 +93,15 @@ def main():
      print("Single line output\n%s\n" % words)
      print("Json output")
      n=1
-     walletjson={}
+     wallet_bip39={}
      for i in words.split(" "):
-        walletjson[n]=i
+        wallet_bip39[n]=i
         n+=1
-     print( json.dumps(walletjson, indent=4, sort_keys=False,separators=(',', ': ') ) )
+     bip39_json = json.dumps(wallet_bip39)
+     print( json.dumps(wallet_bip39, indent=4, sort_keys=False,separators=(',', ': ') ) )
      if gpg_recipient != "":
-         if enc.encData(wName+".asc",walletjson,gpg_recipient):
-            print("wrote gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
+         if enc.encData(wName+".asc",bip39_json,gpg_recipient):
+            print("Wrote armored gpg file %s to recipient key %s " % (wName+".asc", gpg_recipient) )
          else:
             print("GPG error, check keys!")
 
