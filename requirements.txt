@@ -1,5 +1,6 @@
 # requirements file
 # pip3 install -r requirements.txt
+opencv-python
 mnemonic
 bit
 bech32
@@ -7,7 +8,6 @@ qrcode
 sounddevice
 NumPy
 psutil
-opencv-python
 python-gnupg
 base58              
 bitstring                         
@@ -16,7 +16,6 @@ cryptography
 diceware                        
 ecdsa                          
 entrypoints                       
-fastecdsa                       
 fido2                           
 httplib2                       
 keyring                        
@@ -24,9 +23,7 @@ libsecp256k1
 mnemonic                         
 numpy                         
 oauthlib                      
-PyAudio                        
 pylibscrypt                     
-pyOpenSSL                      
 python-bitcoinlib              
 python-dateutil                 
 setuptools                   
@@ -36,4 +33,3 @@ stego-lsb
 urllib3                      
 virtualenv                 
 wheel                      
-json
