@@ -1,4 +1,5 @@
 # Papergen
+
 Bitcoin paperwallet generator by mic entropy or by webcam input
 
  generate a bitcoin paper wallet by gathering entropy from computer microphone. The script calculates the main addresses and shows results. It's important to run on an offline computer, better if with onthefly distro like tails. Network must be down so that no internet connection is active. The script does not need to be online for any purpose.
@@ -15,31 +16,27 @@ Bitcoin paperwallet generator by mic entropy or by webcam input
 
  - Added feature: now you can specify the -w flag in order to choose a recipient key (gpg) to write an encrypted wallet file locally. This means that the wallet is created, shown on the monitor and written as an encrypted ascii file using the public key specified by the flag. The filename is the same as the wallet denomination
 
-## Standard install
+## Requirements
+
+System requirements
 
 ```
- sudo apt-get install libportaudio2
+ sudo apt-get update
+ sudo apt-get install libportaudio2 python3-pip
+```
+
+Install python dependencies
+
+```
  pip3 install -r requirements.txt
-
 ```
- then clone the repository and run the script
 
  using qrcode[pil]
 
-## Install on tails
 
- for running on tails we minimized the requirements of software download with the lib/ directory included. This directory includes all the needed lib for the script to run. it should be placed at the following path
+## Syntax
 
-```
- ~/.local/lib/python3.8/site-packages/
-
-```
- check the version of your python interpreter and correct in case the path above with correct version. In such a way there no dipendence to download and the script will be immediately ready to use on the tails distro.
-
-
-## syntax
-
- to be run on an offline clean computer only. Better using a live distro like tails.
+ to be run on an offline clean computer only. Better using a live distro without internet connection
 
 ```
 usage: papergen.py [-h] [-t {single,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}] [-w WRITE]
@@ -59,7 +56,7 @@ optional arguments:
 
 ```
 
-## Examples
+## Usage examples
 
  Generating a standard single address standalone paperwallet on the testnet. The entropy is gathered from the mic noise.
 
