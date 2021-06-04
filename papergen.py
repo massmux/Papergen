@@ -60,12 +60,12 @@ def clear():
 def main():
   a = ee.entropy(entropy_source)
   clear()
+  working_message="Getting data from mic.. please wait" if entropy_source=='mic' else "Getting data from webcam.. please wait"
+  print (working_message)
   priv = a.getEntropy()
   if priv==False:
       print("Error: sound or video devices not working, aborted")
       sys.exit()
-  working_message="Getting randomness from mic.. please wait" if entropy_source=='mic' else "Getting randomness from webcam.. please wait"
-  print (working_message)
   oWallet=""
   clear()
   if wType=='single':
