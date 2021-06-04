@@ -43,6 +43,21 @@ class entropy():
         self.entropy=0
         return
 
+    def _checkMic(self):
+        try:
+            sounddevice.rec(int(1 * 44100))
+            aaudio = True
+        except:
+            aaudio = False
+        return aaudio
+
+    def _checkCam(self):
+        try:
+            camera.read()
+            ccam = True
+        except:
+            ccam = False
+        return ccam
 
     def _getsha256(self,z):
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
@@ -52,15 +67,11 @@ class entropy():
         """
         creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise.
         """
-        try:
-            noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
-            salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2, blocking=True)
-            (noise,salt) =( hashlib.sha256(bytearray(b''.join(noise0))).hexdigest() , hashlib.sha256(bytearray(b''.join(salt0))).hexdigest() )
-            for i in range(0,SHA256_ROUNDS):
-                noise=self._getsha256(noise+salt)
-        except:
-            # errore gathering noise. then probably device not present or not working
-            noise=False
+        noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+        salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+        (noise,salt) =( hashlib.sha256(bytearray(b''.join(noise0))).hexdigest() , hashlib.sha256(bytearray(b''.join(salt0))).hexdigest() )
+        for i in range(0,SHA256_ROUNDS):
+            noise=self._getsha256(noise+salt)
         return noise
 
 
@@ -78,33 +89,32 @@ class entropy():
 
     def _takePhoto(self):
         """ taking multiple photos from webcam in order to create randomness. Returns data and salt """
-        try:
-            camera = cv2.VideoCapture(0)
-            (all_data,all_salt)=("","")
-            for i in range(IMG_SAMPLES):
-                return_value, image = camera.read()
-                ocurrent = base64.b64encode(image)
-                all_data=all_data+str(ocurrent)
-            for z in range(IMG_SAMPLES_SALT):
-                return_value, image = camera.read()
-                ocurrent = base64.b64encode(image)
-                all_salt=all_salt+str(ocurrent)
-            del(camera)
-            self.img_rnd={  'base': all_data,
-                            'salt': all_salt
-                        }
-        except:
-            # in this case probably we dont have webcam or device not working
-            self.img_rnd=False
+        camera = cv2.VideoCapture(0)
+        (all_data,all_salt)=("","")
+        for i in range(IMG_SAMPLES):
+            return_value, image = camera.read()
+            ocurrent = base64.b64encode(image)
+            all_data=all_data+str(ocurrent)
+        for z in range(IMG_SAMPLES_SALT):
+            return_value, image = camera.read()
+            ocurrent = base64.b64encode(image)
+            all_salt=all_salt+str(ocurrent)
+        del(camera)
+        self.img_rnd={  'base': all_data,
+                        'salt': all_salt
+                    }
         return self.img_rnd
 
 
     def getEntropy(self):
         """ returns true entropy from chosen source """
         if self.source=='mic':
-            self.entropy=self._getMicSd()
+            self.entropy=self._getMicSd() if self._checkMic() else False
         elif self.source=='photo':
-            self._takePhoto()
-            self.entropy=self._getImgRnd()
+            if self._checkCam():
+                self._takePhoto()
+                self.entropy=self._getImgRnd()
+            else:
+                self.entropy=False
         return self.entropy
     
