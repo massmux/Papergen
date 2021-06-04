@@ -23,19 +23,14 @@
 import subprocess,os
 import hashlib
 import cv2,base64
+import sounddevice
 
-""" check if sounddevice lib is available, if it is then gets imported """
-try:
-    import sounddevice
-    mode='sd'
-except ImportError:
-    mode='arec'
 
 """ system constants """
 
-NOISE_SAMPLE        = 30    # main sampling seconds
+NOISE_SAMPLE        = 5    # main sampling seconds
 SHA256_ROUNDS       = 2048  # sha256 rounds (number)
-NOISE_SAMPLE_SALT   = 5     # salt sampling seconds
+NOISE_SAMPLE_SALT   = 3     # salt sampling seconds
 SAMPLE_RATE         = 44100 # samplerate
 SAMPLING_FMT        = 'wav'
 IMG_SAMPLES         = 64
@@ -50,18 +45,6 @@ class entropy():
 
     def _getsha256(self,z):
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
-
-    def _getMicArec(self):
-        """
-        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise. arec command
-        """
-        mycmd=subprocess.getoutput('arecord -d %s -f dat -t %s -q | sha256sum -b' %  (str(NOISE_SAMPLE),SAMPLING_FMT ))
-        hash0=mycmd[:64]
-        mysalt=subprocess.getoutput('arecord -d %s -f dat -t %s -q | sha256sum -b' %  (str(NOISE_SAMPLE_SALT),SAMPLING_FMT ))
-        salt0=mysalt[:64]
-        for i in range(0,SHA256_ROUNDS):
-            hash0=self._getsha256(hash0+salt0)
-        return hash0
 
 
     def _getMicSd(self):
@@ -105,7 +88,7 @@ class entropy():
     def getEntropy(self):
         """ returns true entropy from chosen source """
         if self.source=='mic':
-            self.entropy=self._getMicArec() if mode=='arec' else self._getMicSd()
+            self.entropy=self._getMicSd()
         elif self.source=='photo':
             self._takePhoto()
             self.entropy=self._getImgRnd()
