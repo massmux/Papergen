@@ -111,10 +111,9 @@ class entropy():
         if self.source=='mic':
             self.entropy=self._getMicSd() if self._checkMic() else False
         elif self.source=='photo':
+            self.entropy = False
             if self._checkCam():
                 self._takePhoto()
                 self.entropy=self._getImgRnd()
-            else:
-                self.entropy=False
         return self.entropy
     
