@@ -43,13 +43,14 @@ class entropy():
         self.entropy=0
         return
 
+
     def _getsha256(self,z):
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
 
 
     def _getMicSd(self):
         """
-        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise. python lib
+        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise.
         """
         try:
             noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
@@ -58,19 +59,22 @@ class entropy():
             for i in range(0,SHA256_ROUNDS):
                 noise=self._getsha256(noise+salt)
         except:
+            # errore gathering noise. then probably device not present or not working
             noise=False
         return noise
 
 
     def _getImgRnd(self):
-        """ salt hashing and converting image data into 256 bits final hash """
+        # if false was returned, the device is not working, then exit function
         if self.img_rnd==False:
             return False
+        """ salt hashing and converting image data into 256 bits final hash """
         img_rnd_result= self._getsha256( str(self.img_rnd['base'] ) ) 
         salt = self._getsha256(str( self.img_rnd['salt'] ) )
         for i in range(0,2048):
             img_rnd_result=self._getsha256(img_rnd_result+salt)
         return img_rnd_result
+
 
     def _takePhoto(self):
         """ taking multiple photos from webcam in order to create randomness. Returns data and salt """
@@ -90,8 +94,10 @@ class entropy():
                             'salt': all_salt
                         }
         except:
+            # in this case probably we dont have webcam or device not working
             self.img_rnd=False
         return self.img_rnd
+
 
     def getEntropy(self):
         """ returns true entropy from chosen source """
