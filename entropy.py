@@ -28,9 +28,9 @@ import sounddevice
 
 """ system constants """
 
-NOISE_SAMPLE        = 5    # main sampling seconds
+NOISE_SAMPLE        = 30    # main sampling seconds
 SHA256_ROUNDS       = 2048  # sha256 rounds (number)
-NOISE_SAMPLE_SALT   = 3     # salt sampling seconds
+NOISE_SAMPLE_SALT   = 5     # salt sampling seconds
 SAMPLE_RATE         = 44100 # samplerate
 SAMPLING_FMT        = 'wav'
 IMG_SAMPLES         = 64
