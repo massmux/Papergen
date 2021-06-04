@@ -51,16 +51,21 @@ class entropy():
         """
         creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise. python lib
         """
-        noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
-        salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2, blocking=True)
-        (noise,salt) =( hashlib.sha256(bytearray(b''.join(noise0))).hexdigest() , hashlib.sha256(bytearray(b''.join(salt0))).hexdigest() )
-        for i in range(0,SHA256_ROUNDS):
-            noise=self._getsha256(noise+salt)
+        try:
+            noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+            salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+            (noise,salt) =( hashlib.sha256(bytearray(b''.join(noise0))).hexdigest() , hashlib.sha256(bytearray(b''.join(salt0))).hexdigest() )
+            for i in range(0,SHA256_ROUNDS):
+                noise=self._getsha256(noise+salt)
+        except:
+            noise=False
         return noise
 
 
     def _getImgRnd(self):
         """ salt hashing and converting image data into 256 bits final hash """
+        if self.img_rnd==False:
+            return False
         img_rnd_result= self._getsha256( str(self.img_rnd['base'] ) ) 
         salt = self._getsha256(str( self.img_rnd['salt'] ) )
         for i in range(0,2048):
@@ -69,20 +74,23 @@ class entropy():
 
     def _takePhoto(self):
         """ taking multiple photos from webcam in order to create randomness. Returns data and salt """
-        camera = cv2.VideoCapture(0)
-        (all_data,all_salt)=("","")
-        for i in range(IMG_SAMPLES):
-            return_value, image = camera.read()
-            ocurrent = base64.b64encode(image)
-            all_data=all_data+str(ocurrent)
-        for z in range(IMG_SAMPLES_SALT):
-            return_value, image = camera.read()
-            ocurrent = base64.b64encode(image)
-            all_salt=all_salt+str(ocurrent)
-        del(camera)
-        self.img_rnd={  'base': all_data,
-                        'salt': all_salt
-                    }
+        try:
+            camera = cv2.VideoCapture(0)
+            (all_data,all_salt)=("","")
+            for i in range(IMG_SAMPLES):
+                return_value, image = camera.read()
+                ocurrent = base64.b64encode(image)
+                all_data=all_data+str(ocurrent)
+            for z in range(IMG_SAMPLES_SALT):
+                return_value, image = camera.read()
+                ocurrent = base64.b64encode(image)
+                all_salt=all_salt+str(ocurrent)
+            del(camera)
+            self.img_rnd={  'base': all_data,
+                            'salt': all_salt
+                        }
+        except:
+            self.img_rnd=False
         return self.img_rnd
 
     def getEntropy(self):

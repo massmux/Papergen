@@ -20,7 +20,6 @@ fido2
 httplib2                       
 keyring                        
 libsecp256k1                      
-mnemonic                         
 numpy                         
 oauthlib                      
 pylibscrypt                     
