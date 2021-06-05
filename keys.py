@@ -17,6 +17,7 @@
 #   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 #   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   MNEMONIC CALCULATION WAS PROVIDED BY COLDCARD
 
 
 from binascii import hexlify
@@ -25,11 +26,10 @@ import bech32
 import bit
 import hashlib
 import qrcode
-from mnemonic import Mnemonic
+from wordslist import wl
 
 """
-this class creates either standalone jbok one-address wallet or bip39 24-words mnemonic sequence,
-based on the entropy given as input.
+this class creates either standalone jbok one-address wallet or bip39 24-words mnemonic sequence, based on the entropy given as input.
 """
 
 
@@ -111,12 +111,21 @@ class wallet():
         return wallet
 
     def get_bip39(self):
-        """ creates a bip39 full entropic mnemonic as a HD wallet """
-        mnemo = Mnemonic('english')
-        hash0 = self.entropy
-        entropy_b = bytearray(hash0, 'utf-8')
-        entropy_hash = hashlib.sha256(entropy_b).digest()
-        entropy = hexlify(entropy_hash)
-        words = mnemo.to_mnemonic(entropy_hash)
+        r=self.entropy
+        # Calc sha256
+        h = hashlib.sha256(r.encode()).digest()
+
+        # Apply BIP39 to convert into seed words
+        v = int.from_bytes(h, 'big') << 8
+        w = []
+        for i in range(24):
+            v, m = divmod(v, 2048)
+            w.insert(0, m)
+        assert not v
+
+        # final 8 bits are a checksum
+        w[-1] |= hashlib.sha256(h).digest()[0]
+
+        words=' '.join('%s' % ( wl[i]) for n, i in enumerate(w))
         self.words = words
         return words
