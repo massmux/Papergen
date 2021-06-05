@@ -26,13 +26,8 @@ gpg = gnupg.GPG()
 
 
 def encData(fname,odata,recipient):
-    try:
-        ofile = open(fname,"w")
-        enc_data = gpg.encrypt(odata, recipient)
-        ofile.write(str(enc_data))
-        ofile.close()
-        return True
-    except:
-        return False
-
-
+    enc_obj = gpg.encrypt(odata, recipient)
+    if enc_obj.ok:
+        with open(fname,'w') as f:
+            f.write(str(enc_obj))
+    return enc_obj.ok
