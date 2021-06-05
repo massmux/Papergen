@@ -24,7 +24,7 @@ import gnupg
 gpg = gnupg.GPG()
 
 
-def encData(fname, odata, recipient):
+def enc_data(fname, odata, recipient):
     enc_obj = gpg.encrypt(odata, recipient)
     if enc_obj.ok:
         with open(fname, 'w') as f:

@@ -35,7 +35,7 @@ import keys
 """ parsing arguments """
 
 
-def parseArguments():
+def parse_arguments():
     global args
     parser = argparse.ArgumentParser("papergen.py")
     parser.add_argument("-t", "--type", help="Specify wallet type. Choose \
@@ -69,7 +69,7 @@ def main():
     clear()
     working_message = "Getting data from mic.. please wait" if entropy_source == 'mic' else "Getting data from webcam.. please wait"
     print(working_message)
-    priv = a.getEntropy()
+    priv = a.get_entropy()
     if not priv:
         print("Error: sound or video devices not working, aborted")
         sys.exit()
@@ -77,28 +77,28 @@ def main():
     clear()
     if wType == 'single':
         jwallet = keys.wallet(wType, wName, net)
-        jwallet.setEntropy(priv)
-        wallet_single = jwallet.getJBOK()
+        jwallet.set_entropy(priv)
+        wallet_single = jwallet.get_jbok()
         print("** WALLET JBOK/single **\n")
         print(json.dumps(wallet_single, indent=4, sort_keys=False, separators=(',', ': ')))
         single_json = json.dumps(wallet_single)
 
         """ if a gpg recipient is specified then writing an encrypted file with wallet and omitting writing qrcodes """
         if gpg_recipient != "":
-            if enc.encData(wName + ".asc", single_json, gpg_recipient):
+            if enc.enc_data(wName + ".asc", single_json, gpg_recipient):
                 print("Wrote armored gpg file %s to recipient key %s " % (wName + ".asc", gpg_recipient))
             else:
                 print("GPG error, check keys!")
         else:
             """ just check if qrcodes are generated correctly """
-            mess = "QRCODES: {:12}".format("Created") if jwallet.qrGen() else "QRCODES: {:12}".format("Error")
+            mess = "QRCODES: {:12}".format("Created") if jwallet.qr_gen() else "QRCODES: {:12}".format("Error")
             print(mess)
 
     else:
         print("** WALLET HD Bip39 24 words mnemonic **\n")
         jwallet = keys.wallet(wType)
-        jwallet.setEntropy(priv)
-        words = jwallet.getBip39()
+        jwallet.set_entropy(priv)
+        words = jwallet.get_bip39()
         print("Generated entropy 256bits\n%s\n" % str(priv))
         print("Single line output\n%s\n" % words)
         print("Json output")
@@ -110,14 +110,14 @@ def main():
         bip39_json = json.dumps(wallet_bip39)
         print(json.dumps(wallet_bip39, indent=4, sort_keys=False, separators=(',', ': ')))
         if gpg_recipient != "":
-            if enc.encData(wName + ".asc", bip39_json, gpg_recipient):
+            if enc.enc_data(wName + ".asc", bip39_json, gpg_recipient):
                 print("Wrote armored gpg file %s to recipient key %s " % (wName + ".asc", gpg_recipient))
             else:
                 print("GPG error, check keys!")
 
 
 if __name__ == "__main__":
-    parseArguments()
+    parse_arguments()
     (net, wName, wType, entropy_source, gpg_recipient) = (
         args.network, args.denomination, args.type, args.entropy, args.write)
     main()

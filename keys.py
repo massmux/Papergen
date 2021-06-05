@@ -42,15 +42,15 @@ class wallet():
         self.wallet = {}
         return
 
-    def setNetwork(self, net='mainnet'):
+    def set_network(self, net='mainnet'):
         self.network = net
         return net
 
-    def setEntropy(self, wEntropy):
+    def set_entropy(self, wEntropy):
         self.entropy = wEntropy
         return wEntropy
 
-    def setWalletName(self, wName):
+    def set_wallet_name(self, wName):
         self.wallet_name = wName
         return wName
 
@@ -66,7 +66,7 @@ class wallet():
     def _getsha256(self, z):
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
 
-    def qrGen(self):
+    def qr_gen(self):
         """ generate QR codes for WIF key and addresses """
         try:
             (qr_wif, qr_addr, qr_segwit, qr_bech32) = (qrcode.make(self.wallet['WIF']),
@@ -82,7 +82,7 @@ class wallet():
         except:
             return False
 
-    def getJBOK(self):
+    def get_jbok(self):
         """ creates a 1 key standalone JBOK wallet """
 
         """ define the key object """
@@ -110,7 +110,7 @@ class wallet():
         self.wallet = wallet
         return wallet
 
-    def getBip39(self):
+    def get_bip39(self):
         """ creates a bip39 full entropic mnemonic as a HD wallet """
         mnemo = Mnemonic('english')
         hash0 = self.entropy

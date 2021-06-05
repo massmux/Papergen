@@ -46,7 +46,7 @@ class entropy:
     def _getsha256(self, z):
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
 
-    def _getMicSd(self):
+    def _get_mic_sd(self):
         """
         creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise.
         """
@@ -62,7 +62,7 @@ class entropy:
             noise = False
         return noise
 
-    def _getImgRnd(self):
+    def _get_img_rnd(self):
         """ salt hashing and converting image data into 256 bits final hash """
         img_rnd_result = self._getsha256(str(self.img_rnd['base']))
         salt = self._getsha256(str(self.img_rnd['salt']))
@@ -70,7 +70,7 @@ class entropy:
             img_rnd_result = self._getsha256(img_rnd_result + salt)
         return img_rnd_result
 
-    def _takePhoto(self):
+    def _take_photo(self):
         """ taking multiple photos from webcam in order to create randomness. Returns data and salt. used device 0 """
         try:
             camera = cv2.VideoCapture(0)
@@ -91,13 +91,13 @@ class entropy:
             self.img_rnd = False
         return self.img_rnd
 
-    def getEntropy(self):
+    def get_entropy(self):
         """ returns true entropy from chosen source """
         if self.source == 'mic':
-            self.entropy = self._getMicSd()
+            self.entropy = self._get_mic_sd()
         elif self.source == 'photo':
-            if self._takePhoto():
-                self.entropy = self._getImgRnd()
+            if self._take_photo():
+                self.entropy = self._get_img_rnd()
             else:
                 self.entropy = False
         return self.entropy
