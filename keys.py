@@ -74,7 +74,7 @@ class wallet():
                                                        qrcode.make(self.wallet['p2wpkh-ps2h']),
                                                        qrcode.make(self.wallet['p2wpkh'])
                                                        )
-            qr_wif.save(self.wallet_name + "-WIF.png")
+            #qr_wif.save(self.wallet_name + "-WIF.png")
             qr_addr.save(self.wallet_name + "-p2pkh.png")
             qr_segwit.save(self.wallet_name + "-p2wpkh-p2sh.png")
             qr_bech32.save(self.wallet_name + "-p2wpkh.png")
