@@ -36,7 +36,7 @@ IMG_SAMPLES = 64
 IMG_SAMPLES_SALT = 8
 
 
-class entropy:
+class Entropy:
 
     def __init__(self, source='mic'):
         self.source = source
@@ -48,7 +48,7 @@ class entropy:
 
     def _get_mic_sd(self):
         """
-        creating unique noise by sampling entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise.
+        creating unique noise by sampling Entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise.
         """
         try:
             noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
@@ -92,7 +92,7 @@ class entropy:
         return self.img_rnd
 
     def get_entropy(self):
-        """ returns true entropy from chosen source """
+        """ returns true Entropy from chosen source """
         if self.source == 'mic':
             self.entropy = self._get_mic_sd()
         elif self.source == 'photo':

@@ -3,7 +3,7 @@
 
 #   Copyright (C) 2019-2020 Denali Sàrl www.denali.swiss, Massimo Musumeci, @massmux
 #
-#   This file is a script to calculate a paper wallet by mic gathered randomness
+#   This file is a script to calculate a paper Wallet by mic gathered randomness
 #   or by webcam generated randomness
 #
 #   It is subject to the license terms in the LICENSE file found in the top-level
@@ -38,17 +38,17 @@ import keys
 def parse_arguments():
     global args
     parser = argparse.ArgumentParser("papergen.py")
-    parser.add_argument("-t", "--type", help="Specify wallet type. Choose \
+    parser.add_argument("-t", "--type", help="Specify Wallet type. Choose \
                         'single' standalone address or 'bip39' HD(mnemonic), default single", type=str, required=False,
                         choices=['single', 'bip39'], default='single')
     parser.add_argument("-n", "--network", help="Specify network. Choose \
                         mainnet or testnet, default mainnet", type=str, required=False, choices=['mainnet', 'testnet'],
                         default='mainnet')
-    parser.add_argument("-d", "--denomination", help="Specify a name for your wallet.", type=str, required=False, default='default')
-    parser.add_argument("-e", "--entropy", help="Specify entropy source. Choose \
+    parser.add_argument("-d", "--denomination", help="Specify a name for your Wallet.", type=str, required=False, default='default')
+    parser.add_argument("-e", "--entropy", help="Specify Entropy source. Choose \
                         mic or photo, default mic", type=str, required=False, choices=['mic', 'photo'], default='mic')
     parser.add_argument("-w", "--write", help="Specify the recipient public key to use for \
-                        creating an gpg encrypted file with the wallet", type=str, required=False, default='')
+                        creating an gpg encrypted file with the Wallet", type=str, required=False, default='')
     args = parser.parse_args()
 
 
@@ -65,25 +65,25 @@ def clear():
 
 
 def main():
-    a = ee.entropy(entropy_source)
+    a = ee.Entropy(entropy_source)
     clear()
-    working_message = "Getting data from mic.. please wait" if entropy_source == 'mic' else "Getting data from webcam.. please wait"
+    working_message = "Getting data from mic.. please wait" if entropy_source == 'mic' else "Getting data from " \
+                                                                                            "webcam.. please wait "
     print(working_message)
     priv = a.get_entropy()
     if not priv:
         print("Error: sound or video devices not working, aborted")
         sys.exit()
-    oWallet = ""
     clear()
     if wType == 'single':
-        jwallet = keys.wallet(wType, wName, net)
+        jwallet = keys.Wallet(wType, wName, net)
         jwallet.set_entropy(priv)
         wallet_single = jwallet.get_jbok()
         print("** WALLET JBOK/single **\n")
         print(json.dumps(wallet_single, indent=4, sort_keys=False, separators=(',', ': ')))
         single_json = json.dumps(wallet_single)
 
-        """ if a gpg recipient is specified then writing an encrypted file with wallet and omitting writing qrcodes """
+        """ if a gpg recipient is specified then writing an encrypted file with Wallet and omitting writing qrcodes """
         if gpg_recipient != "":
             if enc.enc_data(wName + ".asc", single_json, gpg_recipient):
                 print("Wrote armored gpg file %s to recipient key %s " % (wName + ".asc", gpg_recipient))
@@ -96,10 +96,10 @@ def main():
 
     else:
         print("** WALLET HD Bip39 24 words mnemonic **\n")
-        jwallet = keys.wallet(wType)
+        jwallet = keys.Wallet(wType)
         jwallet.set_entropy(priv)
         words = jwallet.get_bip39()
-        print("Generated entropy 256bits\n%s\n" % str(priv))
+        print("Generated Entropy 256bits\n%s\n" % str(priv))
         print("Single line output\n%s\n" % words)
         print("Json output")
         n = 1

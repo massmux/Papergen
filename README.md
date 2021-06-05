@@ -1,20 +1,19 @@
 # Papergen
 
-Bitcoin paperwallet generator by mic entropy or by webcam input
+Bitcoin paperwallet generator by mic Entropy or by webcam input
 
- generate a bitcoin paper wallet by gathering entropy from computer microphone. The script calculates the main addresses and shows results. It's important to run on an offline computer, better if with onthefly distro like tails. Network must be down so that no internet connection is active. The script does not need to be online for any purpose.
+ generate a bitcoin paper Wallet by gathering Entropy from computer microphone. It's important to run on an offline system, for example using a distro like tails without persistence and without any Internet connection. The script does not need to be online for any purpose.
 
- Since true entropy from microphone is used, please be assured that your computer audio works, your microphone is active and works taking noise from the environment. Should microphone is off or not working, the entropy source would compromised and your resulting wallet would be not secure. For optimal result you should have a source of noise in front of microphone.
+ Since true Entropy from microphone is used, please be assured that your computer audio works, your microphone is active and works taking noise from the environment. Should microphone is off or not working, the Entropy source would be compromised, and your resulting Wallet would be not secure. For optimal result you should have a source of noise in front of microphone.
 
- If entropy from webcam is used, please be assured that your computer webcam works. Your webcam infact will take a certain amount of photos in order to get randomness. Should webcam is of or not working, the entropy source would be compromised and you resulting wallet would be not secure. For optimal result you should have the webcam pointed towards something moving fastly in front of it.
+ If Entropy from webcam is used, please be assured that your computer webcam works. Your webcam infact will take a certain amount of photos in order to get randomness. Should webcam is of or not working, the Entropy source would be compromised, and you resulting Wallet would be not secure. For optimal result you should have the webcam pointed towards something moving fastly in front of it.
 
  It supports mainnet and testnet. It provides the following bitcoin address formats: p2pkh ; p2wpkh-p2sh ; p2wpkh
 
- - Added feature: now you can specify -d bip39 in order to get a true random generated HD wallet by 24 words sequence. In this case the network choice has no influece. A 24words bip39 HD mnemonic output is returned.
-
- - Added feature: now you can specify -e photo or -e mic in order to choose between webcam generated entropy or microphone generate entropy
-
- - Added feature: now you can specify the -w flag in order to choose a recipient key (gpg) to write an encrypted wallet file locally. This means that the wallet is created, shown on the monitor and written as an encrypted ascii file using the public key specified by the flag. The filename is the same as the wallet denomination
+- Added feature: now you can specify -d bip39 in order to get a true random generated HD Wallet by 24 words sequence. In this case the network choice has no influece. A 24words bip39 HD mnemonic output is returned with the generated entropy.
+- Added feature: now you can specify -e photo or -e mic in order to choose between webcam generated Entropy or microphone generate Entropy
+- Added feature: now you can specify the -w flag in order to choose a recipient key (gpg) to write an encrypted Wallet file locally. This means that the Wallet is created, shown on the monitor and written as an encrypted ascii file using the public key specified by the flag. The filename is the same as the Wallet denomination
+- Added feature: removed the mnemonic library, because now mnemonic calculation is made without any external lib.
 
 ## Requirements
 
@@ -36,7 +35,7 @@ Install python dependencies
 
 ## Syntax
 
- to be run on an offline clean computer only. Better using a live distro without internet connection
+ to be run on an offline clean computer only. For production use, a live distro like tails with internet connection down is mandatory. You can run the appimage file for this purpose.
 
 ```
 usage: papergen.py [-h] [-t {single,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}] [-w WRITE]
@@ -44,21 +43,21 @@ usage: papergen.py [-h] [-t {single,bip39}] [-n {mainnet,testnet}] [-d DENOMINAT
 optional arguments:
   -h, --help            show this help message and exit
   -t {single,bip39}, --type {single,bip39}
-                        Specify wallet type. Choose 'single' standalone address or 'bip39' HD(mnemonic), default single
+                        Specify Wallet type. Choose 'single' standalone address or 'bip39' HD(mnemonic), default single
   -n {mainnet,testnet}, --network {mainnet,testnet}
                         Specify network. Choose mainnet or testnet, default mainnet
   -d DENOMINATION, --denomination DENOMINATION
-                        Specify a name for your wallet.
-  -e {mic,photo}, --entropy {mic,photo}
-                        Specify entropy source. Choose mic or photo, default mic
+                        Specify a name for your Wallet.
+  -e {mic,photo}, --Entropy {mic,photo}
+                        Specify Entropy source. Choose mic or photo, default mic
   -w WRITE, --write WRITE
-                        Specify the recipient public key to use for creating an gpg encrypted file with the wallet
+                        Specify the recipient public key to use for creating an gpg encrypted file with the Wallet
 
 ```
 
 ## Usage examples
 
- Generating a standard single address standalone paperwallet on the testnet. The entropy is gathered from the mic noise.
+ Generating a standard single address standalone paperwallet on the testnet. The Entropy is gathered from the mic noise.
 
 ```
 $ ./papergen.py -t single -n testnet -d example_wallet -e photo
@@ -79,47 +78,46 @@ $ ./papergen.py -t single -n testnet -d example_wallet -e photo
 QRCODES: Created    
 
 ```
- Generating a HD bip39 mnemonic 24words sequence. The entropy is gathered from the mic noise.
+ Generating a HD bip39 mnemonic 24words sequence. The Entropy is gathered from the mic noise.
 
 ```
-$ ./papergen.py -t bip39
-
+$ ./papergen.py -t bip39 
+Getting data from mic.. please wait
 ** WALLET HD Bip39 24 words mnemonic **
 
-Generated entropy 256bits
-63e58dd572818f4a28c5459b10ebece49e66127e6f0ba36518a8c860cd0774d7
+Generated Entropy 256bits
+be1a9c39c2fdd4dce957508ecd660bb992be28cfa094318ae83e7573b461afcb
 
 Single line output
-nothing olive athlete attitude fold road damage practice infant aerobic wrap attract example digital master bright business crunch cloth weasel auto detect grit media
+finish train leader until evil mesh check brand correct bounce happy outdoor soft sting picnic unable photo sword candy that unfair inject change fiction
 
 Json output
 {
-    "1": "nothing",
-    "2": "olive",
-    "3": "athlete",
-    "4": "attitude",
-    "5": "fold",
-    "6": "road",
-    "7": "damage",
-    "8": "practice",
-    "9": "infant",
-    "10": "aerobic",
-    "11": "wrap",
-    "12": "attract",
-    "13": "example",
-    "14": "digital",
-    "15": "master",
-    "16": "bright",
-    "17": "business",
-    "18": "crunch",
-    "19": "cloth",
-    "20": "weasel",
-    "21": "auto",
-    "22": "detect",
-    "23": "grit",
-    "24": "media"
+    "1": "finish",
+    "2": "train",
+    "3": "leader",
+    "4": "until",
+    "5": "evil",
+    "6": "mesh",
+    "7": "check",
+    "8": "brand",
+    "9": "correct",
+    "10": "bounce",
+    "11": "happy",
+    "12": "outdoor",
+    "13": "soft",
+    "14": "sting",
+    "15": "picnic",
+    "16": "unable",
+    "17": "photo",
+    "18": "sword",
+    "19": "candy",
+    "20": "that",
+    "21": "unfair",
+    "22": "inject",
+    "23": "change",
+    "24": "fiction"
 }
-
 
 ```
 
@@ -130,7 +128,7 @@ Json output
 ## Disclaimer
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
