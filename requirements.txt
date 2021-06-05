@@ -1,12 +1,13 @@
 # requirements file
 # pip3 install -r requirements.txt
-opencv-python
-mnemonic
-bit
-bech32
-qrcode
-sounddevice
+opencv-python~=4.3.0.36
+mnemonic~=0.19
+bit~=0.7.1
+bech32~=1.2.0
+qrcode~=6.1
+sounddevice~=0.4.1
 NumPy
+gnupg
 psutil
 python-gnupg
 base58              

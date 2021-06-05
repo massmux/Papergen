@@ -19,15 +19,14 @@
 #   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
 
-
 import gnupg
 
 gpg = gnupg.GPG()
 
 
-def encData(fname,odata,recipient):
+def enc_data(fname, odata, recipient):
     enc_obj = gpg.encrypt(odata, recipient)
     if enc_obj.ok:
-        with open(fname,'w') as f:
+        with open(fname, 'w') as f:
             f.write(str(enc_obj))
     return enc_obj.ok
