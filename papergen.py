@@ -44,8 +44,7 @@ def parseArguments():
     parser.add_argument("-n", "--network", help="Specify network. Choose \
                         mainnet or testnet, default mainnet", type=str, required=False, choices=['mainnet', 'testnet'],
                         default='mainnet')
-    parser.add_argument("-d", "--denomination", help="Specify a name for your wallet.", \
-                        type=str, required=False, default='default')
+    parser.add_argument("-d", "--denomination", help="Specify a name for your wallet.", type=str, required=False, default='default')
     parser.add_argument("-e", "--entropy", help="Specify entropy source. Choose \
                         mic or photo, default mic", type=str, required=False, choices=['mic', 'photo'], default='mic')
     parser.add_argument("-w", "--write", help="Specify the recipient public key to use for \
@@ -71,7 +70,7 @@ def main():
     working_message = "Getting data from mic.. please wait" if entropy_source == 'mic' else "Getting data from webcam.. please wait"
     print(working_message)
     priv = a.getEntropy()
-    if priv == False:
+    if not priv:
         print("Error: sound or video devices not working, aborted")
         sys.exit()
     oWallet = ""
@@ -120,5 +119,5 @@ def main():
 if __name__ == "__main__":
     parseArguments()
     (net, wName, wType, entropy_source, gpg_recipient) = (
-    args.network, args.denomination, args.type, args.entropy, args.write)
+        args.network, args.denomination, args.type, args.entropy, args.write)
     main()

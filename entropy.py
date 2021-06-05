@@ -36,7 +36,7 @@ IMG_SAMPLES = 64
 IMG_SAMPLES_SALT = 8
 
 
-class entropy():
+class entropy:
 
     def __init__(self, source='mic'):
         self.source = source
