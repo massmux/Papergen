@@ -26,7 +26,7 @@ import bech32
 import bit
 import qrcode
 
-from wordslist import wl
+import pg.wordslist as wordslist
 
 """this class creates either standalone jbok one-address Wallet or bip39 24-words mnemonic sequence, based on the 
 Entropy given as input. """
@@ -125,6 +125,6 @@ class Wallet:
         # final 8 bits are a checksum
         w[-1] |= hashlib.sha256(h).digest()[0]
 
-        words = ' '.join('%s' % (wl[i]) for n, i in enumerate(w))
+        words = ' '.join('%s' % (wordslist.wl[i]) for n, i in enumerate(w))
         self.words = words
         return words

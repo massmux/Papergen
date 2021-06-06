@@ -25,12 +25,13 @@
 
 import argparse
 import json
-import os
 import sys
 
-import encryption as enc
-import entropy as ee
-import keys
+import pg.encryption as enc
+import pg.entropy as ee
+import pg.keys as keys
+
+from pg.utils import clear
 
 """ parsing arguments """
 
@@ -53,15 +54,6 @@ def parse_arguments():
 
 
 """ just helper func """
-
-
-def clear():
-    # for windows
-    if os.name == 'nt':
-        _ = os.system('cls')
-    # for mac and linux(here, os.name is 'posix')
-    else:
-        _ = os.system('clear')
 
 
 def main():
