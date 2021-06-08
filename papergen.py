@@ -24,13 +24,14 @@
 
 
 import argparse
-import json
-import os
 import sys
 
-import encryption as enc
-import entropy as ee
-import keys
+import pg.encryption as enc
+import pg.entropy as ee
+import pg.keys as keys
+
+from pg.utils import clear
+from pg.output import *
 
 """ parsing arguments """
 
@@ -52,18 +53,6 @@ def parse_arguments():
     args = parser.parse_args()
 
 
-""" just helper func """
-
-
-def clear():
-    # for windows
-    if os.name == 'nt':
-        _ = os.system('cls')
-    # for mac and linux(here, os.name is 'posix')
-    else:
-        _ = os.system('clear')
-
-
 def main():
     a = ee.Entropy(entropy_source)
     clear()
@@ -75,49 +64,36 @@ def main():
         print("Error: sound or video devices not working, aborted")
         sys.exit()
     clear()
-    if wType == 'single':
-        jwallet = keys.Wallet(wType, wName, net)
+    """Wallet: Jbok/single"""
+    if w_type == 'single':
+        jwallet = keys.Wallet(w_type, w_name, net)
         jwallet.set_entropy(priv)
         wallet_single = jwallet.get_jbok()
-        print("** WALLET JBOK/single **\n")
-        print(json.dumps(wallet_single, indent=4, sort_keys=False, separators=(',', ': ')))
-        single_json = json.dumps(wallet_single)
-
+        single_json=print_single(wallet_single)
+        mess = "QRCODES: {:12}".format("Created") if jwallet.qr_gen() else "QRCODES: {:12}".format("Error")
+        print(mess)
         """ if a gpg recipient is specified then writing an encrypted file with Wallet and omitting writing qrcodes """
         if gpg_recipient != "":
-            if enc.enc_data(wName + ".asc", single_json, gpg_recipient):
-                print("Wrote armored gpg file %s to recipient key %s " % (wName + ".asc", gpg_recipient))
+            if enc.enc_data(w_name + ".asc", single_json, gpg_recipient):
+                print("Wrote armored gpg file %s to recipient key %s " % (w_name + ".asc", gpg_recipient))
             else:
                 print("GPG error, check keys!")
-        else:
-            """ just check if qrcodes are generated correctly """
-            mess = "QRCODES: {:12}".format("Created") if jwallet.qr_gen() else "QRCODES: {:12}".format("Error")
-            print(mess)
 
     else:
-        print("** WALLET HD Bip39 24 words mnemonic **\n")
-        jwallet = keys.Wallet(wType)
+        """Wallet bip39"""
+        jwallet = keys.Wallet(w_type)
         jwallet.set_entropy(priv)
         words = jwallet.get_bip39()
-        print("Generated Entropy 256bits\n%s\n" % str(priv))
-        print("Single line output\n%s\n" % words)
-        print("Json output")
-        n = 1
-        wallet_bip39 = {}
-        for i in words.split(" "):
-            wallet_bip39[n] = i
-            n += 1
-        bip39_json = json.dumps(wallet_bip39)
-        print(json.dumps(wallet_bip39, indent=4, sort_keys=False, separators=(',', ': ')))
+        bip39_json=print_bip39(words,priv)
         if gpg_recipient != "":
-            if enc.enc_data(wName + ".asc", bip39_json, gpg_recipient):
-                print("Wrote armored gpg file %s to recipient key %s " % (wName + ".asc", gpg_recipient))
+            if enc.enc_data(w_name + ".asc", bip39_json, gpg_recipient):
+                print("Wrote armored gpg file %s to recipient key %s " % (w_name + ".asc", gpg_recipient))
             else:
                 print("GPG error, check keys!")
 
 
 if __name__ == "__main__":
     parse_arguments()
-    (net, wName, wType, entropy_source, gpg_recipient) = (
+    (net, w_name, w_type, entropy_source, gpg_recipient) = (
         args.network, args.denomination, args.type, args.entropy, args.write)
     main()

@@ -26,9 +26,9 @@ import bech32
 import bit
 import qrcode
 
-from wordslist import wl
+import pg.wordslist as wordslist
 
-"""this class creates either standalone jbok one-address Wallet or bip39 24-words mnemonic sequence, based on the 
+"""this mmodule creates either standalone jbok one-address Wallet or bip39 24-words mnemonic sequence, based on the 
 Entropy given as input. """
 
 
@@ -45,13 +45,13 @@ class Wallet:
         self.network = net
         return net
 
-    def set_entropy(self, wEntropy):
-        self.entropy = wEntropy
-        return wEntropy
+    def set_entropy(self, w_entropy):
+        self.entropy = w_entropy
+        return w_entropy
 
-    def set_wallet_name(self, wName):
-        self.wallet_name = wName
-        return wName
+    def set_wallet_name(self, w_name):
+        self.wallet_name = w_name
+        return w_name
 
     def _hash160(self, keyobj):
         ripemd160 = hashlib.new("ripemd160")
@@ -66,14 +66,12 @@ class Wallet:
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
 
     def qr_gen(self):
-        """ generate QR codes for WIF key and addresses """
+        """ generate QR codes for addresses """
         try:
-            (qr_wif, qr_addr, qr_segwit, qr_bech32) = (qrcode.make(self.wallet['WIF']),
-                                                       qrcode.make(self.wallet['p2pkh']),
+            (qr_addr, qr_segwit, qr_bech32) = (qrcode.make(self.wallet['p2pkh']),
                                                        qrcode.make(self.wallet['p2wpkh-ps2h']),
                                                        qrcode.make(self.wallet['p2wpkh'])
                                                        )
-            # qr_wif.save(self.wallet_name + "-WIF.png")
             qr_addr.save(self.wallet_name + "-p2pkh.png")
             qr_segwit.save(self.wallet_name + "-p2wpkh-p2sh.png")
             qr_bech32.save(self.wallet_name + "-p2wpkh.png")
@@ -125,6 +123,6 @@ class Wallet:
         # final 8 bits are a checksum
         w[-1] |= hashlib.sha256(h).digest()[0]
 
-        words = ' '.join('%s' % (wl[i]) for n, i in enumerate(w))
+        words = ' '.join('%s' % (wordslist.wl[i]) for n, i in enumerate(w))
         self.words = words
         return words
