@@ -33,3 +33,5 @@ stego-lsb
 urllib3                      
 virtualenv                 
 wheel                      
+btc_hd_wallet
+mnemonic
