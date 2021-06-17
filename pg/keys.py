@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 
 #   Copyright (C) 2019-2020 Denali Sàrl www.denali.swiss, Massimo Musumeci, @massmux
 #
