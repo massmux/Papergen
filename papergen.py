@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-
+#!/usr/bin/env python
 
 #   Copyright (C) 2019-2020 Denali Sàrl www.denali.swiss, Massimo Musumeci, @massmux
 #
