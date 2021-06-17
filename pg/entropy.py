@@ -24,10 +24,11 @@ import hashlib
 import base64
 import cv2
 import sounddevice
+import binascii
 
 """ system constants """
 
-NOISE_SAMPLE = 30  # main sampling seconds
+NOISE_SAMPLE = 3  # main sampling seconds
 SHA256_ROUNDS = 2048  # sha256 rounds (number)
 NOISE_SAMPLE_SALT = 5  # salt sampling seconds
 SAMPLE_RATE = 44100  # samplerate
@@ -47,28 +48,34 @@ class Entropy:
         return hashlib.sha256(z.encode('utf-8')).hexdigest()
 
     def _get_mic_sd(self):
-        """
-        creating unique noise by sampling Entropy and salting it for SHA256_ROUNDS. Returns sha256 salt hashed noise.
-        """
+        """ creating 256bits entropy from mic. then returns final entropy by using pbkdf2_hmac. """
         try:
+            # sampling randomness from device
             noise0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2, blocking=True)
-            salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2,
-                                    blocking=True)
-            (noise, salt) = (hashlib.sha256(bytearray(b''.join(noise0))).hexdigest(),
-                             hashlib.sha256(bytearray(b''.join(salt0))).hexdigest())
-            for i in range(0, SHA256_ROUNDS):
-                noise = self._getsha256(noise + salt)
+            salt0 = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE_SALT), samplerate=SAMPLE_RATE, channels=2, blocking=True)
+            # hashing the randomness gathered to get 256bits entropy
+            (mic_noise, mic_salt) = (   hashlib.sha256(bytearray(b''.join(noise0))).hexdigest(),
+                                        hashlib.sha256(bytearray(b''.join(salt0))).hexdigest()
+                                    )
+            # building final entropy as 256bits
+            noise = hashlib.pbkdf2_hmac('sha256', bytes.fromhex(mic_noise), bytes.fromhex(mic_salt), SHA256_ROUNDS)
+            noise = binascii.hexlify(bytearray(noise)).decode()
         except:
             noise = False
         return noise
 
+
     def _get_img_rnd(self):
-        """ salt hashing and converting image data into 256 bits final hash """
-        img_rnd_result = self._getsha256(str(self.img_rnd['base']))
-        salt = self._getsha256(str(self.img_rnd['salt']))
-        for i in range(0, 2048):
-            img_rnd_result = self._getsha256(img_rnd_result + salt)
+        """ creating 256bits entropy from sampling camera. then returns final entropy by using pbkdf2_hmac. """
+        img_rnd = self._getsha256(str(self.img_rnd['base']))
+        img_salt = self._getsha256(str(self.img_rnd['salt']))
+        # returns bytearray
+        img_rnd_result_bytes = hashlib.pbkdf2_hmac('sha256', bytes.fromhex(img_rnd), bytes.fromhex(img_salt), SHA256_ROUNDS)
+        # from bytearray to hex string
+        img_rnd_result = binascii.hexlify(bytearray(img_rnd_result_bytes)).decode()
         return img_rnd_result
+
+
 
     def _take_photo(self):
         """ taking multiple photos from webcam in order to create randomness. Returns data and salt. used device 0 """
