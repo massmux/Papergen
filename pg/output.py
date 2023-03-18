@@ -1,9 +1,9 @@
+"""this module prints outputs for the user and returns json"""
 
 import json
 from mnemonic import Mnemonic
 from btc_hd_wallet import BIP85DeterministicEntropy
 
-"""this module prints outputs for the user and returns json"""
 
 def print_bip39(mnemonic_words,base_entropy):
     print("** WALLET HD Bip39 24 words mnemonic **\n")

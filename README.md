@@ -15,6 +15,44 @@ Bitcoin paperwallet generator by mic Entropy or by webcam input
 - Added feature: now you can specify the -w flag in order to choose a recipient key (gpg) to write an encrypted Wallet file locally. This means that the Wallet is created, shown on the monitor and written as an encrypted ascii file using the public key specified by the flag. The filename is the same as the Wallet denomination
 - Added feature: removed the mnemonic library, because now mnemonic calculation is made without any external lib.
 
+## Note on openssl
+
+Hashlib uses OpenSSL for ripemd160 and apparently OpenSSL disabled some older crypto algos around version 3.0 in November 2021. All the functions are still there but require manual enabling. See issue 16994 of OpenSSL github project for details.
+
+To quickly enable it, find the directory that holds your OpenSSL config file or a symlink to it, by running the below command:
+
+```
+openssl version -d
+```
+
+You can now go to the directory and edit the config file:
+
+```
+sudo vi openssl.cnf
+```
+
+Make sure that the config file contains following lines:
+
+```
+openssl_conf = openssl_init
+
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+default = default_sect
+legacy = legacy_sect
+
+[default_sect]
+activate = 1
+
+[legacy_sect]
+activate = 1
+```
+
+Uncomment what is needed to
+
+
 ## Requirements
 
 System requirements
@@ -22,6 +60,7 @@ System requirements
 ```
  sudo apt-get update
  sudo apt-get install libportaudio2 python3-pip
+ sudo apt-get install python3-pyaudio
 ```
 
 Install python dependencies
@@ -31,6 +70,38 @@ Install python dependencies
 ```
 
  using qrcode[pil]
+
+## openssl.cnf
+
+check the directory
+
+```
+openssl version -d
+```
+
+You can now go to the directory and edit the config file (it may be necessary to use sudo):
+
+vim openssl.cnf
+
+Make sure that the config file contains following lines:
+```
+openssl_conf = openssl_init
+
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+default = default_sect
+legacy = legacy_sect
+
+[default_sect]
+activate = 1
+
+[legacy_sect]
+activate = 1
+```
+
+save and exit
 
 
 ## Syntax

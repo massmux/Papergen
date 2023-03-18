@@ -1,34 +1,19 @@
 
-#   Copyright (C) 2019-2020 Denali Sàrl www.denali.swiss, Massimo Musumeci, @massmux
-#
-#   It is subject to the license terms in the LICENSE file found in the top-level
-#   directory of this distribution.
-#
-#   No part of this software, including this file, may be copied, modified,
-#   propagated, or distributed except according to the terms contained in the
-#   LICENSE file.
-#   The above copyright notice and this permission notice shall be included in
-#   all copies or substantial portions of the Software.
-#
-#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-#   MNEMONIC CALCULATION WAS PROVIDED BY COLDCARD
-
-
 import hashlib
 
 import bech32
 import bit
 import qrcode
 
+from ripemd import ripemd160
+
+
 import pg.wordslist as wordslist
 
-"""this mmodule creates either standalone jbok one-address Wallet or bip39 24-words mnemonic sequence, based on the 
-Entropy given as input. """
+"""
+this mmodule creates either standalone jbok one-address Wallet or bip39 24-words mnemonic sequence, based on the 
+Entropy given as input.
+"""
 
 
 class Wallet:
@@ -52,10 +37,12 @@ class Wallet:
         self.wallet_name = w_name
         return w_name
 
+
     def _hash160(self, keyobj):
-        ripemd160 = hashlib.new("ripemd160")
+        ripemd160 = hashlib.new('ripemd160')
         ripemd160.update(hashlib.sha256(keyobj.public_key).digest())
         return ripemd160.digest()
+
 
     def _bech32enc(self, ohash160, network='mainnet'):
         bechenc = bech32.encode("bc", 0, ohash160) if network == 'mainnet' else bech32.encode("tb", 0, ohash160)
