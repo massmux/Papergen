@@ -4,3 +4,6 @@ tmp
 *.asc
 venv
 .idea
+env
+.venv
+*.py[cod]

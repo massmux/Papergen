@@ -1,19 +1,35 @@
 
 import hashlib
 
+import base58
 import bech32
-import bit
+import coincurve
 import qrcode
 
-from ripemd import ripemd160
-
+from ripemd.ripemd160 import ripemd160
 
 import pg.wordslist as wordslist
 
 """
-this mmodule creates either standalone jbok one-address Wallet or bip39 24-words mnemonic sequence, based on the 
+this module creates either standalone jbok one-address Wallet or bip39 24-words mnemonic sequence, based on the
 Entropy given as input.
+ripemd160 comes from the ripemd package, so no OpenSSL legacy provider is needed.
 """
+
+SECP256K1_N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+
+NETWORKS = {
+    'mainnet': {'wif': b'\x80', 'p2pkh': b'\x00', 'p2sh': b'\x05', 'hrp': 'bc'},
+    'testnet': {'wif': b'\xef', 'p2pkh': b'\x6f', 'p2sh': b'\xc4', 'hrp': 'tb'},
+}
+
+
+def hash160(data):
+    return ripemd160(hashlib.sha256(data).digest())
+
+
+def b58check(payload):
+    return base58.b58encode_check(payload).decode()
 
 
 class Wallet:
@@ -37,78 +53,45 @@ class Wallet:
         self.wallet_name = w_name
         return w_name
 
-
-    def _hash160(self, keyobj):
-        ripemd160 = hashlib.new('ripemd160')
-        ripemd160.update(hashlib.sha256(keyobj.public_key).digest())
-        return ripemd160.digest()
-
-
-    def _bech32enc(self, ohash160, network='mainnet'):
-        bechenc = bech32.encode("bc", 0, ohash160) if network == 'mainnet' else bech32.encode("tb", 0, ohash160)
-        return bechenc
-
-    def _getsha256(self, z):
-        return hashlib.sha256(z.encode('utf-8')).hexdigest()
-
     def qr_gen(self):
         """ generate QR codes for addresses """
-        try:
-            (qr_addr, qr_segwit, qr_bech32) = (qrcode.make(self.wallet['p2pkh']),
-                                                       qrcode.make(self.wallet['p2wpkh-ps2h']),
-                                                       qrcode.make(self.wallet['p2wpkh'])
-                                                       )
-            qr_addr.save(self.wallet_name + "-p2pkh.png")
-            qr_segwit.save(self.wallet_name + "-p2wpkh-p2sh.png")
-            qr_bech32.save(self.wallet_name + "-p2wpkh.png")
-            return True
-        except:
-            return False
+        for addr_type in ('p2pkh', 'p2wpkh-p2sh', 'p2wpkh'):
+            qrcode.make(self.wallet[addr_type]).save("%s-%s.png" % (self.wallet_name, addr_type))
+        return True
 
     def get_jbok(self):
         """ creates a 1 key standalone JBOK Wallet """
+        net = NETWORKS[self.network]
+        k = bytes.fromhex(self.entropy)
+        if len(k) != 32 or not 0 < int.from_bytes(k, 'big') < SECP256K1_N:
+            raise ValueError("entropy is not a valid secp256k1 private key")
 
-        """ define the key object """
-        key = bit.Key.from_hex(self.entropy) if self.network == 'mainnet' else bit.PrivateKeyTestnet.from_hex(
-            self.entropy)
-
-        """ private and public key values in hex format """
-        hex_k = key.to_hex()
-        hex_K = bit.utils.bytes_to_hex(key.public_key, True)
-
-        """ calculate hash160 and bech32 address """
-        hex_hash160 = self._hash160(key).hex()
-        bech32 = self._bech32enc(self._hash160(key), self.network)
+        """ compressed public key and its hash160 """
+        pub = coincurve.PrivateKey(k).public_key.format(compressed=True)
+        h160 = hash160(pub)
+        redeem_script = b'\x00\x14' + h160
 
         wallet = {'name': self.wallet_name,
                   'network': 'bitcoin ' + self.network,
-                  'private': hex_k,
-                  'public': hex_K,
-                  'hash160': hex_hash160,
-                  'WIF': key.to_wif(),
-                  'p2pkh': key.address,
-                  'p2wpkh-ps2h': key.segwit_address,
-                  'p2wpkh': bech32
+                  'private': k.hex(),
+                  'public': pub.hex().upper(),
+                  'hash160': h160.hex(),
+                  'WIF': b58check(net['wif'] + k + b'\x01'),
+                  'p2pkh': b58check(net['p2pkh'] + h160),
+                  'p2wpkh-p2sh': b58check(net['p2sh'] + hash160(redeem_script)),
+                  'p2wpkh': bech32.encode(net['hrp'], 0, h160)
                   }
         self.wallet = wallet
         return wallet
 
     def get_bip39(self):
-        r = self.entropy
-        # Calc sha256
-        h = hashlib.sha256(r.encode()).digest()
+        """ bip39 24 words mnemonic from the 256 bits entropy as is """
+        ent = bytes.fromhex(self.entropy)
+        if len(ent) != 32:
+            raise ValueError("bip39 24 words needs 256 bits entropy")
 
-        # Apply BIP39 to convert into seed words
-        v = int.from_bytes(h, 'big') << 8
-        w = []
-        for i in range(24):
-            v, m = divmod(v, 2048)
-            w.insert(0, m)
-        assert not v
-
-        # final 8 bits are a checksum
-        w[-1] |= hashlib.sha256(h).digest()[0]
-
-        words = ' '.join('%s' % (wordslist.wl[i]) for n, i in enumerate(w))
+        # 256 bits entropy + 8 bits checksum = 24 words of 11 bits
+        v = (int.from_bytes(ent, 'big') << 8) | hashlib.sha256(ent).digest()[0]
+        words = ' '.join(wordslist.wl[(v >> (11 * i)) & 0x7ff] for i in reversed(range(24)))
         self.words = words
         return words
