@@ -63,6 +63,22 @@ def check_quality(source, series):
     return h, credited
 
 
+def import_sounddevice():
+    """ the AppImage bundles PortAudio: PAPERGEN_PORTAUDIO points to it, since find_library would not see it """
+    lib = os.environ.get('PAPERGEN_PORTAUDIO')
+    if not lib:
+        import sounddevice
+        return sounddevice
+    import ctypes.util
+    find_library = ctypes.util.find_library
+    ctypes.util.find_library = lambda name: lib if name == 'portaudio' else find_library(name)
+    try:
+        import sounddevice
+    finally:
+        ctypes.util.find_library = find_library
+    return sounddevice
+
+
 class Entropy:
 
     def __init__(self, source='mic'):
@@ -74,7 +90,7 @@ class Entropy:
 
     def _get_mic_samples(self):
         """ records raw 16 bit samples from the default input device, one array per channel """
-        import sounddevice
+        sounddevice = import_sounddevice()
         rec = sounddevice.rec(int(SAMPLE_RATE * NOISE_SAMPLE), samplerate=SAMPLE_RATE, channels=2,
                               dtype='int16', blocking=True)
         rec = rec[int(SAMPLE_RATE * MIC_WARMUP):]

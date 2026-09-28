@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Papergen
+Comment=Offline bitcoin paperwallet generator
+Exec=papergen
+Icon=papergen
+Terminal=true
+Categories=Utility;

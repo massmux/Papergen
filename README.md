@@ -100,11 +100,58 @@ Install python dependencies in a virtual environment
  pip3 install -r requirements.txt
 ```
 
-If you upgrade an existing environment, remove the conflicting gnupg package first: `pip3 uninstall gnupg` (python-gnupg is used).
+If you upgrade an existing environment, remove the conflicting packages first: `pip3 uninstall gnupg opencv-python` (python-gnupg and opencv-python-headless are used).
+
+## AppImage (Tails)
+
+The AppImage is a single executable file that contains Python, all the dependencies and PortAudio, so the tool runs on a Tails system disconnected from the Internet with nothing to install.
+
+It runs on x86_64 Linux with glibc 2.34 or newer: Tails 6 and later, Debian 12 and later, Ubuntu 22.04 and later. It uses the system ALSA library (`libasound2`), present on every desktop system with working audio, including Tails.
+
+### Running on Tails
+
+1. Copy `Papergen-x86_64.AppImage` and `Papergen-x86_64.AppImage.sha256` to Tails (e.g. with a USB stick), into the home directory.
+2. Verify the file, comparing the hash with one obtained from a trusted source:
+
+   ```
+   sha256sum -c Papergen-x86_64.AppImage.sha256
+   ```
+3. Make it executable and run it from a terminal, with the same options as `papergen.py`:
+
+   ```
+   chmod +x Papergen-x86_64.AppImage
+   ./Papergen-x86_64.AppImage -t bip39
+   ```
+
+   If it does not start because FUSE is not available, use:
+
+   ```
+   ./Papergen-x86_64.AppImage --appimage-extract-and-run -t bip39
+   ```
+
+Output files (QR codes, `.asc`) are written in the current directory. On Tails without persistence they are lost at shutdown: copy what you need before turning it off.
+
+### Building the AppImage
+
+The build runs on a machine with docker and Internet access:
+
+```
+appimage/build.sh
+```
+
+The result is `dist/Papergen-x86_64.AppImage` with its `.sha256` file. The build runs in a Debian 12 container and every external input is pinned by sha256: the container image, the Python 3.11 runtime ([python-appimage](https://github.com/niess/python-appimage)), appimagetool and its runtime, and the PortAudio source, built with ALSA only. Python packages are installed with `pip --require-hashes` from `appimage/requirements.lock` and `appimage/build-requirements.lock`.
+
+After changing `requirements.txt`, regenerate the lock files with:
+
+```
+appimage/build.sh --relock
+```
+
+The AppImage was tested with no network, with real mic and webcam, on the build machine and in clean Debian 12 and Debian 13 containers (the bases of Tails 6 and Tails 7).
 
 ## Syntax
 
-To be run on an offline clean computer only. For production use, a live distro like Tails with the Internet connection down is mandatory. You can run the appimage file for this purpose.
+To be run on an offline clean computer only. For production use, a live distro like Tails with the Internet connection down is mandatory. The AppImage can be used for this purpose, see above.
 
 ```
 usage: papergen.py [-h] [-t {single,bip39}] [-n {mainnet,testnet}] [-d DENOMINATION] [-e {mic,photo}] [-w WRITE]

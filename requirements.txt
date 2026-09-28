@@ -5,7 +5,7 @@ base58==2.1.1
 bech32==1.2.0
 coincurve==18.0.0
 numpy==1.24.0
-opencv-python==4.6.0.66
+opencv-python-headless==4.6.0.66
 python-gnupg==0.5.0
 qrcode[pil]==6.1
 ripemd-hash==1.0.0

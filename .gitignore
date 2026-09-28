@@ -7,3 +7,6 @@ venv
 env
 .venv
 *.py[cod]
+build/
+dist/
+!appimage/papergen.png

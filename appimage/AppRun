@@ -1,0 +1,6 @@
+#!/bin/sh
+# AppImage entry point: runs papergen with the bundled python and PortAudio
+
+HERE="$(dirname "$(readlink -f "$0")")"
+export PAPERGEN_PORTAUDIO="$HERE/opt/papergen/lib/libportaudio.so.2"
+exec "$HERE/opt/python3.11/bin/python3.11" -E -s "$HERE/opt/papergen/papergen.py" "$@"
